@@ -131,7 +131,7 @@
       const form = e.target;
       const data = Object.fromEntries(new FormData(form).entries());
 
-      const res = await fetch("/add-book", {
+      const res = await fetch("/functions/add-book", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
