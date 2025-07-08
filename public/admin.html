@@ -1,3 +1,4 @@
+<!-- Save this as admin.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,16 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Dashboard</title>
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
+    * { box-sizing: border-box; }
     body {
       font-family: Arial, sans-serif;
       margin: 0;
       background-color: #f0f0f0;
     }
-
     #dashboard {
       max-width: 700px;
       margin: 2rem auto;
@@ -23,11 +20,7 @@
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-
-    h1, h2 {
-      text-align: center;
-    }
-
+    h1, h2 { text-align: center; }
     input, textarea, button {
       display: block;
       width: 100%;
@@ -35,7 +28,6 @@
       margin-bottom: 1rem;
       font-size: 1rem;
     }
-
     .tabs {
       display: flex;
       flex-wrap: wrap;
@@ -43,7 +35,6 @@
       margin-bottom: 1rem;
       justify-content: center;
     }
-
     .tabs button {
       flex: 1;
       min-width: 45%;
@@ -54,55 +45,32 @@
       border-radius: 5px;
       font-size: 1rem;
     }
-
     .tabs button.active {
       background-color: #0077cc;
       color: white;
     }
-
-    .tab-content {
-      display: none;
-    }
-
-    .tab-content.active {
-      display: block;
-    }
-
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
     .book-item {
       padding: 0.75rem;
       border-bottom: 1px solid #ccc;
       cursor: pointer;
       font-size: 1rem;
     }
-
-    .book-item:hover {
-      background-color: #eef;
-    }
-
+    .book-item:hover { background-color: #eef; }
     .edit-book-form {
       margin-top: 1rem;
       border-top: 1px solid #ccc;
       padding-top: 1rem;
     }
-
     @media (max-width: 500px) {
-      #dashboard {
-        margin: 1rem;
-        padding: 1rem;
-      }
-
+      #dashboard { margin: 1rem; padding: 1rem; }
       .tabs button {
         font-size: 0.9rem;
         padding: 0.5rem;
       }
-
-      input, textarea, button {
-        font-size: 1rem;
-      }
-
-      .book-item {
-        font-size: 0.95rem;
-      }
+      input, textarea, button { font-size: 1rem; }
+      .book-item { font-size: 0.95rem; }
     }
   </style>
 </head>
@@ -157,7 +125,7 @@
       const form = e.target;
       const data = Object.fromEntries(new FormData(form).entries());
 
-      const res = await fetch("/api/add-book", {
+      const res = await fetch("/functions/add-book", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
@@ -173,18 +141,30 @@
     };
 
     async function loadBooks() {
-      const res = await fetch("/api/books");
-      const books = await res.json();
       const list = document.getElementById("bookList");
-      list.innerHTML = "";
+      list.innerHTML = "Loading...";
 
-      books.forEach(book => {
-        const div = document.createElement("div");
-        div.className = "book-item";
-        div.textContent = book.title + (book.subtitle ? ` (${book.subtitle})` : "");
-        div.onclick = () => loadBookForEdit(book);
-        list.appendChild(div);
-      });
+      try {
+        const res = await fetch("/functions/books");
+        const books = await res.json();
+        list.innerHTML = "";
+
+        books.forEach(book => {
+          const div = document.createElement("div");
+          div.className = "book-item";
+          div.textContent = book.title + (book.subtitle ? ` (${book.subtitle})` : "");
+          div.onclick = () => loadBookForEdit(book);
+          list.appendChild(div);
+        });
+
+        if (books.length === 0) {
+          list.innerHTML = "<p>No books found.</p>";
+        }
+
+      } catch (err) {
+        console.error("Error loading books:", err);
+        list.innerHTML = "<p>Error loading books. See console for details.</p>";
+      }
     }
 
     function loadBookForEdit(book) {
@@ -202,7 +182,7 @@
       const form = e.target;
       const data = Object.fromEntries(new FormData(form).entries());
 
-      const res = await fetch("/api/update-book", {
+      const res = await fetch("/functions/update-book", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
@@ -217,7 +197,6 @@
       }
     };
 
-    // Load books when page is ready
     window.addEventListener("DOMContentLoaded", loadBooks);
   </script>
 </body>
