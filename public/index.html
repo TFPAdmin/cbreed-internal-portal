@@ -3,12 +3,47 @@
 <head>
   <meta charset="UTF-8" />
   <title>Internal Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f8f9fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .card {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 1rem;
+    }
+
+    a {
+      display: block;
+      margin: 0.5rem 0;
+      font-size: 1.1rem;
+      text-decoration: none;
+      color: #007bff;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
-  <h1>Welcome to Internal Portal</h1>
-  <ul>
-    <li><a href="/admin.html">📚 Admin Bookshelf</a></li>
-    <li><a href="/writing.html">✍️ Writing Portal</a></li>
-  </ul>
+  <div class="card">
+    <h1>📘 Internal Portal</h1>
+    <a href="/admin.html">🛠️ Manage Bookshelf</a>
+    <a href="/writing.html">✍️ Write Chapters</a>
+  </div>
 </body>
 </html>
