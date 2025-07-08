@@ -16,7 +16,7 @@
     }
 
     #dashboard {
-      max-width: 600px;
+      max-width: 700px;
       margin: 2rem auto;
       background: white;
       padding: 2rem;
@@ -24,7 +24,7 @@
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
 
-    h1, h2, h3 {
+    h1, h2 {
       text-align: center;
     }
 
@@ -118,7 +118,7 @@
 
     <div id="add" class="tab-content active">
       <form id="addBookForm">
-        <input type="number" placeholder="Book ID (for sorting)" name="id" />
+        <input type="text" placeholder="ID (for ordering)" name="id" required />
         <input type="text" placeholder="Title" name="title" required />
         <input type="text" placeholder="Subtitle" name="subtitle" />
         <textarea placeholder="Excerpt" name="excerpt"></textarea>
@@ -129,11 +129,11 @@
     </div>
 
     <div id="view" class="tab-content">
-      <div id="bookList"></div>
+      <div id="bookList">Loading...</div>
 
       <form id="editBookForm" class="edit-book-form" style="display:none;">
         <h3>Edit Book</h3>
-        <input type="number" placeholder="Book ID (for sorting)" name="id" />
+        <input type="hidden" name="id" />
         <input type="text" placeholder="Title" name="title" required />
         <input type="text" placeholder="Subtitle" name="subtitle" />
         <textarea placeholder="Excerpt" name="excerpt"></textarea>
@@ -178,15 +178,13 @@
       const list = document.getElementById("bookList");
       list.innerHTML = "";
 
-      books
-        .sort((a, b) => Number(a.id) - Number(b.id))
-        .forEach(book => {
-          const div = document.createElement("div");
-          div.className = "book-item";
-          div.textContent = `${book.id ? book.id + ". " : ""}${book.title}${book.subtitle ? ` (${book.subtitle})` : ""}`;
-          div.onclick = () => loadBookForEdit(book);
-          list.appendChild(div);
-        });
+      books.forEach(book => {
+        const div = document.createElement("div");
+        div.className = "book-item";
+        div.textContent = book.title + (book.subtitle ? ` (${book.subtitle})` : "");
+        div.onclick = () => loadBookForEdit(book);
+        list.appendChild(div);
+      });
     }
 
     function loadBookForEdit(book) {
@@ -219,8 +217,8 @@
       }
     };
 
-    // Load books on start
-    loadBooks();
+    // Load books when page is ready
+    window.addEventListener("DOMContentLoaded", loadBooks);
   </script>
 </body>
 </html>
