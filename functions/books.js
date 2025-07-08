@@ -1,16 +1,13 @@
-export async function onRequestGet(context) {
-  const { DB } = context.env;
-
+// /functions/books.js
+export async function onRequest(context) {
+  const db = context.env.DB;
   try {
-    const { results } = await DB.prepare(
-      "SELECT id, title, subtitle, excerpt, cover, wattpad FROM books ORDER BY id ASC"
-    ).all();
-
+    const { results } = await db.prepare(`SELECT * FROM books ORDER BY id`).all();
     return new Response(JSON.stringify(results), {
       headers: { "Content-Type": "application/json" }
     });
-  } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
+  } catch (err) {
+    return new Response(JSON.stringify({ error: err.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" }
     });
