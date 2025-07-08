@@ -2,90 +2,222 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Admin - Bookshelf</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard</title>
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f2f2f2;
-      padding: 2rem;
+    * {
+      box-sizing: border-box;
     }
 
-    .container {
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #f0f0f0;
+    }
+
+    #dashboard {
       max-width: 600px;
-      margin: auto;
+      margin: 2rem auto;
       background: white;
       padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
 
-    h1 {
-      margin-bottom: 1.5rem;
+    h1, h2, h3 {
+      text-align: center;
     }
 
-    input, textarea {
+    input, textarea, button {
+      display: block;
       width: 100%;
-      margin-bottom: 1rem;
       padding: 0.75rem;
+      margin-bottom: 1rem;
       font-size: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 6px;
     }
 
-    button {
-      background: #007bff;
-      color: white;
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      justify-content: center;
+    }
+
+    .tabs button {
+      flex: 1;
+      min-width: 45%;
+      padding: 0.75rem;
       border: none;
-      padding: 0.75rem 1.5rem;
-      font-size: 1rem;
-      border-radius: 6px;
+      background-color: #ddd;
       cursor: pointer;
+      border-radius: 5px;
+      font-size: 1rem;
     }
 
-    button:hover {
-      background: #0056b3;
+    .tabs button.active {
+      background-color: #0077cc;
+      color: white;
     }
 
-    #msg {
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .book-item {
+      padding: 0.75rem;
+      border-bottom: 1px solid #ccc;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .book-item:hover {
+      background-color: #eef;
+    }
+
+    .edit-book-form {
       margin-top: 1rem;
-      font-weight: bold;
+      border-top: 1px solid #ccc;
+      padding-top: 1rem;
+    }
+
+    @media (max-width: 500px) {
+      #dashboard {
+        margin: 1rem;
+        padding: 1rem;
+      }
+
+      .tabs button {
+        font-size: 0.9rem;
+        padding: 0.5rem;
+      }
+
+      input, textarea, button {
+        font-size: 1rem;
+      }
+
+      .book-item {
+        font-size: 0.95rem;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>📚 Update a Book</h1>
-    <form id="bookForm">
-      <input type="text" id="id" placeholder="Book ID (required to update)" />
-      <input type="text" id="title" placeholder="Title" required />
-      <input type="text" id="subtitle" placeholder="Subtitle" />
-      <textarea id="excerpt" placeholder="Excerpt"></textarea>
-      <input type="text" id="cover" placeholder="Cover Image URL" />
-      <input type="text" id="wattpad" placeholder="Wattpad Link" />
-      <button type="submit">Update Book</button>
-      <p id="msg"></p>
-    </form>
+
+  <div id="dashboard">
+    <h1>Admin Dashboard</h1>
+
+    <div class="tabs">
+      <button onclick="switchTab('add')" id="tab-add" class="active">Add Book</button>
+      <button onclick="switchTab('view')" id="tab-view">Current Books</button>
+    </div>
+
+    <div id="add" class="tab-content active">
+      <form id="addBookForm">
+        <input type="text" placeholder="Title" name="title" required />
+        <input type="text" placeholder="Subtitle" name="subtitle" />
+        <textarea placeholder="Excerpt" name="excerpt"></textarea>
+        <input type="url" placeholder="Cover Image URL" name="cover" />
+        <input type="url" placeholder="Wattpad Link" name="wattpad" />
+        <button type="submit">Add Book</button>
+      </form>
+    </div>
+
+    <div id="view" class="tab-content">
+      <div id="bookList"></div>
+
+      <form id="editBookForm" class="edit-book-form" style="display:none;">
+        <h3>Edit Book</h3>
+        <input type="hidden" name="id" />
+        <input type="text" placeholder="Title" name="title" required />
+        <input type="text" placeholder="Subtitle" name="subtitle" />
+        <textarea placeholder="Excerpt" name="excerpt"></textarea>
+        <input type="url" placeholder="Cover Image URL" name="cover" />
+        <input type="url" placeholder="Wattpad Link" name="wattpad" />
+        <button type="submit">Update Book</button>
+      </form>
+    </div>
   </div>
 
   <script>
-    document.getElementById('bookForm').onsubmit = async (e) => {
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
+      document.getElementById(tab).classList.add('active');
+      document.getElementById('tab-' + tab).classList.add('active');
+    }
+
+    document.getElementById("addBookForm").onsubmit = async (e) => {
       e.preventDefault();
-      const data = {
-        id: document.getElementById("id").value,
-        title: document.getElementById("title").value,
-        subtitle: document.getElementById("subtitle").value,
-        excerpt: document.getElementById("excerpt").value,
-        cover: document.getElementById("cover").value,
-        wattpad: document.getElementById("wattpad").value
-      };
+      const form = e.target;
+      const data = Object.fromEntries(new FormData(form).entries());
+
+      const res = await fetch("/api/add-book", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+
+      if (res.ok) {
+        alert("Book added");
+        form.reset();
+        loadBooks();
+      } else {
+        alert("Failed to add book");
+      }
+    };
+
+    async function loadBooks() {
+      const res = await fetch("/api/books");
+      const books = await res.json();
+      const list = document.getElementById("bookList");
+      list.innerHTML = "";
+
+      books.forEach(book => {
+        const div = document.createElement("div");
+        div.className = "book-item";
+        div.textContent = book.title + (book.subtitle ? ` (${book.subtitle})` : "");
+        div.onclick = () => loadBookForEdit(book);
+        list.appendChild(div);
+      });
+    }
+
+    function loadBookForEdit(book) {
+      const form = document.getElementById("editBookForm");
+      form.style.display = "block";
+      for (const key in book) {
+        if (form.elements[key]) {
+          form.elements[key].value = book[key];
+        }
+      }
+    }
+
+    document.getElementById("editBookForm").onsubmit = async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const data = Object.fromEntries(new FormData(form).entries());
+
       const res = await fetch("/api/update-book", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
       });
-      document.getElementById("msg").textContent = res.ok ? "✅ Book updated!" : "❌ Failed.";
+
+      if (res.ok) {
+        alert("Book updated");
+        form.style.display = "none";
+        loadBooks();
+      } else {
+        alert("Failed to update book");
+      }
     };
+
+    // Load books on page load
+    loadBooks();
   </script>
 </body>
 </html>
