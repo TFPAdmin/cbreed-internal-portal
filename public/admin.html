@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin - Bookshelf</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; }
+    input, textarea { display: block; width: 100%; margin-bottom: 1rem; padding: 0.5rem; }
+    button { padding: 0.5rem 1rem; }
+  </style>
+</head>
+<body>
+  <h1>Update Book</h1>
+  <form id="bookForm">
+    <input type="text" id="id" placeholder="Book ID (required to update)" />
+    <input type="text" id="title" placeholder="Title" required />
+    <input type="text" id="subtitle" placeholder="Subtitle" />
+    <textarea id="excerpt" placeholder="Excerpt"></textarea>
+    <input type="text" id="cover" placeholder="Cover Image URL" />
+    <input type="text" id="wattpad" placeholder="Wattpad Link" />
+    <button type="submit">Update Book</button>
+    <p id="msg"></p>
+  </form>
+
+  <script>
+    document.getElementById('bookForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const data = {
+        id: document.getElementById("id").value,
+        title: document.getElementById("title").value,
+        subtitle: document.getElementById("subtitle").value,
+        excerpt: document.getElementById("excerpt").value,
+        cover: document.getElementById("cover").value,
+        wattpad: document.getElementById("wattpad").value
+      };
+      const res = await fetch("/api/update-book", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+      document.getElementById("msg").textContent = res.ok ? "✅ Book updated!" : "❌ Failed.";
+    };
+  </script>
+</body>
+</html>
