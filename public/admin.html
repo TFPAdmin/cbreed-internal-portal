@@ -52,33 +52,31 @@
     .tab-content.active { display: block; }
     .book-item {
       border-bottom: 1px solid #ccc;
+    }
+    .book-header {
       padding: 0.75rem;
       cursor: pointer;
+      background-color: #eee;
     }
-    .book-item:hover {
-      background-color: #eef;
+    .book-header:hover {
+      background-color: #ddd;
     }
-    .book-details {
+    .book-body {
       display: none;
       padding: 0.75rem;
-      border-top: 1px solid #ccc;
-      background-color: #f9f9f9;
     }
     .edit-book-form {
       margin-top: 1rem;
       border-top: 1px solid #ccc;
       padding-top: 1rem;
     }
-    .book-actions {
-      display: flex;
-      gap: 0.5rem;
-      margin-top: 0.5rem;
-    }
-    .book-actions button {
-      flex: 1;
-      padding: 0.5rem;
-      font-size: 0.9rem;
+    .delete-btn {
+      background-color: #cc0000;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
       cursor: pointer;
+      margin-top: 1rem;
     }
     @media (max-width: 500px) {
       #dashboard { margin: 1rem; padding: 1rem; }
@@ -87,15 +85,12 @@
         padding: 0.5rem;
       }
       input, textarea, button { font-size: 1rem; }
-      .book-item { font-size: 0.95rem; }
     }
   </style>
 </head>
 <body>
-
   <div id="dashboard">
     <h1>Admin Dashboard</h1>
-
     <div class="tabs">
       <button onclick="switchTab('add')" id="tab-add" class="active">Add Book</button>
       <button onclick="switchTab('view')" id="tab-view">Current Books</button>
@@ -115,7 +110,6 @@
 
     <div id="view" class="tab-content">
       <div id="bookList">Loading...</div>
-
       <form id="editBookForm" class="edit-book-form" style="display:none;">
         <h3>Edit Book</h3>
         <input type="hidden" name="id" />
@@ -141,17 +135,14 @@
       e.preventDefault();
       const form = e.target;
       const data = Object.fromEntries(new FormData(form).entries());
-
       const res = await fetch("/add-book", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
       });
-
       if (res.ok) {
         alert("Book added");
         form.reset();
-        switchTab('view');
         loadBooks();
       } else {
         alert("Failed to add book");
@@ -161,35 +152,34 @@
     async function loadBooks() {
       const list = document.getElementById("bookList");
       list.innerHTML = "Loading...";
-
       try {
         const res = await fetch("/books");
         const books = await res.json();
         list.innerHTML = "";
-
         books.forEach(book => {
-          const item = document.createElement("div");
-          item.className = "book-item";
-          item.innerHTML = `<strong>${book.title}${book.subtitle ? ` (${book.subtitle})` : ""}</strong>`;
+          const wrapper = document.createElement("div");
+          wrapper.className = "book-item";
 
-          const details = document.createElement("div");
-          details.className = "book-details";
-          details.innerHTML = `
-            <p><strong>Excerpt:</strong> ${book.excerpt || "—"}</p>
-            <p><strong>Cover:</strong> <a href="${book.cover}" target="_blank">${book.cover}</a></p>
-            <p><strong>Wattpad:</strong> <a href="${book.wattpad}" target="_blank">${book.wattpad}</a></p>
-            <div class="book-actions">
-              <button onclick='editBook(${JSON.stringify(book)})'>Edit</button>
-              <button onclick='deleteBook("${book.id}")'>Delete</button>
-            </div>
+          const header = document.createElement("div");
+          header.className = "book-header";
+          header.textContent = book.title + (book.subtitle ? ` (${book.subtitle})` : "");
+          header.onclick = () => {
+            body.style.display = body.style.display === "block" ? "none" : "block";
+          };
+
+          const body = document.createElement("div");
+          body.className = "book-body";
+          body.innerHTML = `
+            <p><strong>ID:</strong> ${book.id}</p>
+            <p><strong>Excerpt:</strong> ${book.excerpt}</p>
+            <p><strong>Cover:</strong> <a href="${book.cover}" target="_blank">View Image</a></p>
+            <p><strong>Wattpad:</strong> <a href="${book.wattpad}" target="_blank">Read</a></p>
+            <button class="delete-btn" onclick="deleteBook('${book.id}')">Delete</button>
           `;
 
-          item.addEventListener("click", () => {
-            details.style.display = details.style.display === "block" ? "none" : "block";
-          });
-
-          list.appendChild(item);
-          list.appendChild(details);
+          wrapper.appendChild(header);
+          wrapper.appendChild(body);
+          list.appendChild(wrapper);
         });
 
         if (books.length === 0) {
@@ -202,25 +192,13 @@
       }
     }
 
-    function editBook(book) {
-      const form = document.getElementById("editBookForm");
-      form.style.display = "block";
-      for (const key in book) {
-        if (form.elements[key]) {
-          form.elements[key].value = book[key];
-        }
-      }
-    }
-
     async function deleteBook(id) {
       if (!confirm("Are you sure you want to delete this book?")) return;
-
       const res = await fetch("/delete-book", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id })
       });
-
       if (res.ok) {
         alert("Book deleted");
         loadBooks();
@@ -233,13 +211,11 @@
       e.preventDefault();
       const form = e.target;
       const data = Object.fromEntries(new FormData(form).entries());
-
       const res = await fetch("/update-book", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
       });
-
       if (res.ok) {
         alert("Book updated");
         form.style.display = "none";
