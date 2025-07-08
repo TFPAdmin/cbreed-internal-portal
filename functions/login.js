@@ -1,4 +1,4 @@
-import { compare } from 'bcryptjs';
+import { compare } from '@edge-runtime/bcrypt';
 
 export async function onRequestPost(context) {
   const { username, password } = await context.request.json();
