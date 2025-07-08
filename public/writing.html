@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Writing Portal</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; }
+    input, textarea { display: block; width: 100%; margin-bottom: 1rem; padding: 0.5rem; }
+    button { padding: 0.5rem 1rem; }
+  </style>
+</head>
+<body>
+  <h1>Write a Chapter</h1>
+  <form id="chapterForm">
+    <input type="text" id="bookTitle" placeholder="Book Title" required />
+    <input type="text" id="chapterTitle" placeholder="Chapter Title" required />
+    <textarea id="content" placeholder="Chapter Content" rows="10"></textarea>
+    <button type="submit">Save Chapter</button>
+    <p id="msg"></p>
+  </form>
+
+  <script>
+    document.getElementById("chapterForm").onsubmit = async (e) => {
+      e.preventDefault();
+      const data = {
+        bookTitle: document.getElementById("bookTitle").value,
+        chapterTitle: document.getElementById("chapterTitle").value,
+        content: document.getElementById("content").value
+      };
+      const res = await fetch("/api/save-chapter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+      document.getElementById("msg").textContent = res.ok ? "✅ Chapter saved!" : "❌ Failed.";
+    };
+  </script>
+</body>
+</html>
