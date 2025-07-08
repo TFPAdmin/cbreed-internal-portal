@@ -2,49 +2,116 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Internal Dashboard</title>
+  <title>Internal Portal</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f8f9fa;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+    * {
+      box-sizing: border-box;
     }
 
-    .card {
-      background: white;
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f2f5;
+    }
+
+    /* NAVBAR STYLES */
+    .navbar {
+      background-color: #003366;
+      overflow: hidden;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 1rem;
+      color: white;
+    }
+
+    .navbar h1 {
+      margin: 0;
+      font-size: 1.4rem;
+    }
+
+    .nav-right {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .dropdown {
+      position: relative;
+    }
+
+    .dropbtn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      padding: 0.5rem;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: white;
+      min-width: 160px;
+      box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+      z-index: 1;
+      border-radius: 4px;
+    }
+
+    .dropdown-content a {
+      color: black;
+      padding: 0.5rem 1rem;
+      text-decoration: none;
+      display: block;
+    }
+
+    .dropdown-content a:hover {
+      background-color: #f0f0f0;
+    }
+
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+
+    .main {
       padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
       text-align: center;
     }
 
-    h1 {
-      margin-bottom: 1rem;
-    }
-
-    a {
-      display: block;
-      margin: 0.5rem 0;
-      font-size: 1.1rem;
-      text-decoration: none;
-      color: #007bff;
-    }
-
-    a:hover {
-      text-decoration: underline;
+    @media (max-width: 600px) {
+      .nav-right {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>📘 Internal Portal</h1>
-    <a href="/admin.html">🛠️ Manage Bookshelf</a>
-    <a href="/writing.html">✍️ Write Chapters</a>
-    <a href="/view-chapters.html">📖 View Chapters</a>
+  <div class="navbar">
+    <h1>📚 Internal Portal</h1>
+    <div class="nav-right">
+      <div class="dropdown">
+        <button class="dropbtn">✍️ Writing ▾</button>
+        <div class="dropdown-content">
+          <a href="/write.html">Write Chapter</a>
+          <a href="/view-chapters.html">View Chapters</a>
+        </div>
+      </div>
+
+      <div class="dropdown">
+        <button class="dropbtn">📖 Bookshelf ▾</button>
+        <div class="dropdown-content">
+          <a href="https://admin.cbreedauthor.com/">Admin</a>
+          <a href="https://books.cbreedauthor.com/">Public Shelf</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+    <h2>Welcome to the Internal Portal</h2>
+    <p>Select an option from the navigation menu above.</p>
   </div>
 </body>
 </html>
