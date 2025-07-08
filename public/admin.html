@@ -53,7 +53,6 @@
     .book-item {
       padding: 0.75rem;
       border-bottom: 1px solid #ccc;
-      cursor: pointer;
       font-size: 1rem;
     }
     .book-item:hover { background-color: #eef; }
@@ -140,6 +139,7 @@
       if (res.ok) {
         alert("Book added");
         form.reset();
+        switchTab("view");
         loadBooks();
       } else {
         alert("Failed to add book");
@@ -148,7 +148,7 @@
 
     async function deleteBook(id) {
       if (!confirm("Are you sure you want to delete this book?")) return;
-      const res = await fetch("/delete-book", {
+      const res = await fetch("/functions/delete-book", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id })
@@ -162,7 +162,7 @@
       list.innerHTML = "Loading...";
 
       try {
-        const res = await fetch("/books");
+        const res = await fetch("/functions/books");
         const books = await res.json();
         list.innerHTML = "";
 
@@ -219,7 +219,7 @@
       const form = e.target;
       const data = Object.fromEntries(new FormData(form).entries());
 
-      const res = await fetch("/update-book", {
+      const res = await fetch("/functions/update-book", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
