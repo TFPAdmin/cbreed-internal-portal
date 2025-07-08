@@ -3,21 +3,67 @@
 <head>
   <meta charset="UTF-8" />
   <title>Writing Portal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body { font-family: sans-serif; padding: 2rem; }
-    input, textarea { display: block; width: 100%; margin-bottom: 1rem; padding: 0.5rem; }
-    button { padding: 0.5rem 1rem; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f8f9fa;
+      padding: 2rem;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      margin-bottom: 1.5rem;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1e7e34;
+    }
+
+    #msg {
+      margin-top: 1rem;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
-  <h1>Write a Chapter</h1>
-  <form id="chapterForm">
-    <input type="text" id="bookTitle" placeholder="Book Title" required />
-    <input type="text" id="chapterTitle" placeholder="Chapter Title" required />
-    <textarea id="content" placeholder="Chapter Content" rows="10"></textarea>
-    <button type="submit">Save Chapter</button>
-    <p id="msg"></p>
-  </form>
+  <div class="container">
+    <h1>✍️ Write a Chapter</h1>
+    <form id="chapterForm">
+      <input type="text" id="bookTitle" placeholder="Book Title" required />
+      <input type="text" id="chapterTitle" placeholder="Chapter Title" required />
+      <textarea id="content" placeholder="Chapter Content" rows="10"></textarea>
+      <button type="submit">Save Chapter</button>
+      <p id="msg"></p>
+    </form>
+  </div>
 
   <script>
     document.getElementById("chapterForm").onsubmit = async (e) => {
