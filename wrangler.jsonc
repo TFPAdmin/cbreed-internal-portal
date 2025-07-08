@@ -1,0 +1,19 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "internal-site",
+  "main": "api/index.js", // not used directly since you split routes
+  "compatibility_date": "2025-07-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "book-shelf", // your existing D1 DB name
+      "database_id": "f0159cd3-fe12-4178-95f2-5b77165b93e8"
+    }
+  ],
+  "routes": [],
+  "upload_source_maps": false,
+  "placement": {
+    "mode": "smart"
+  }
+}
