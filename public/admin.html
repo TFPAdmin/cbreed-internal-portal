@@ -118,6 +118,7 @@
 
     <div id="add" class="tab-content active">
       <form id="addBookForm">
+        <input type="number" placeholder="Book ID (for sorting)" name="id" />
         <input type="text" placeholder="Title" name="title" required />
         <input type="text" placeholder="Subtitle" name="subtitle" />
         <textarea placeholder="Excerpt" name="excerpt"></textarea>
@@ -132,7 +133,7 @@
 
       <form id="editBookForm" class="edit-book-form" style="display:none;">
         <h3>Edit Book</h3>
-        <input type="hidden" name="id" />
+        <input type="number" placeholder="Book ID (for sorting)" name="id" />
         <input type="text" placeholder="Title" name="title" required />
         <input type="text" placeholder="Subtitle" name="subtitle" />
         <textarea placeholder="Excerpt" name="excerpt"></textarea>
@@ -177,13 +178,15 @@
       const list = document.getElementById("bookList");
       list.innerHTML = "";
 
-      books.forEach(book => {
-        const div = document.createElement("div");
-        div.className = "book-item";
-        div.textContent = book.title + (book.subtitle ? ` (${book.subtitle})` : "");
-        div.onclick = () => loadBookForEdit(book);
-        list.appendChild(div);
-      });
+      books
+        .sort((a, b) => Number(a.id) - Number(b.id))
+        .forEach(book => {
+          const div = document.createElement("div");
+          div.className = "book-item";
+          div.textContent = `${book.id ? book.id + ". " : ""}${book.title}${book.subtitle ? ` (${book.subtitle})` : ""}`;
+          div.onclick = () => loadBookForEdit(book);
+          list.appendChild(div);
+        });
     }
 
     function loadBookForEdit(book) {
@@ -216,7 +219,7 @@
       }
     };
 
-    // Load books on page load
+    // Load books on start
     loadBooks();
   </script>
 </body>
