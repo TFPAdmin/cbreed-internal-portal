@@ -7,9 +7,11 @@ export async function onRequestPost(context) {
       return new Response("Missing password", { status: 400 });
     }
 
-    const { results } = await DB.prepare(`SELECT password FROM admin_settings`).all();
+    const { results } = await DB.prepare(`
+      SELECT value FROM admin_settings WHERE key LIKE 'admin_%'
+    `).all();
 
-    const match = results.some(row => row.password === password);
+    const match = results.some(row => row.value === password);
 
     if (!match) {
       return new Response("Unauthorized", { status: 401 });
