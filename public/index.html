@@ -29,6 +29,7 @@
       });
 
       if (res.ok) {
+        localStorage.setItem("authenticated", "true");  // ✅ this was missing!
         window.location.href = "home.html";
       } else {
         alert("Incorrect password");
