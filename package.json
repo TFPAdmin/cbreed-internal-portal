@@ -1,1 +1,14 @@
-
+{
+  "name": "cbreed-author-dashboard",
+  "version": "1.0.0",
+  "description": "Internal author dashboard for C.B.Reed using Cloudflare Pages and D1",
+  "scripts": {
+    "dev": "wrangler pages dev public --compatibility-date=2025-07-08",
+    "deploy": "wrangler pages deploy public --project-name=cbreed-author-dashboard"
+  },
+  "type": "module",
+  "dependencies": {},
+  "devDependencies": {},
+  "keywords": [],
+  "license": "MIT"
+}
