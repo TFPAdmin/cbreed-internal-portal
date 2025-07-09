@@ -1,1 +1,152 @@
+/* Global Styles */
+body {
+  font-family: Georgia, serif;
+  margin: 0;
+  padding: 0;
+  background: #f4f4f4;
+  color: #333;
+}
 
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 2rem;
+}
+
+/* Header Titles */
+h1, h2, h3 {
+  text-align: center;
+  margin-bottom: 1rem;
+  color: #3e2c2c;
+}
+
+/* Login Page */
+.login-container {
+  max-width: 400px;
+  margin: 5rem auto;
+  text-align: center;
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.1);
+}
+
+.login-icon {
+  width: 80px;
+  margin-bottom: 1rem;
+}
+
+#login-form input {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+#login-form button {
+  width: 100%;
+  padding: 0.75rem;
+  background: #4b2e2e;
+  color: white;
+  border: none;
+  font-size: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* Bookshelf Grid (bookshelf.html) */
+#book-list ul {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.book-card {
+  background: #fff;
+  border: 2px solid #bbb;
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: 3px 3px 6px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.book-card img {
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+}
+
+.book-card h3 {
+  margin: 0.5rem 0 0;
+  font-size: 1.2rem;
+}
+
+.book-card p {
+  font-size: 0.95rem;
+  margin: 0.5rem 0;
+}
+
+.book-card a {
+  font-size: 0.9rem;
+  color: #0066cc;
+  text-decoration: none;
+  margin-bottom: 0.5rem;
+}
+
+.book-card button {
+  background: #990000;
+  color: white;
+  border: none;
+  padding: 0.4rem;
+  margin-top: 0.3rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Forms */
+form input,
+form textarea {
+  width: 100%;
+  padding: 0.6rem;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+form button {
+  background: #004080;
+  color: white;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* Writer Page */
+#new-chapter textarea {
+  font-family: Georgia, serif;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  height: 300px;
+  background: #fffefc;
+  border: 1px solid #ccc;
+  padding: 1rem;
+  border-radius: 6px;
+}
+
+#current-book {
+  font-weight: bold;
+  border-bottom: 2px dashed #ccc;
+  padding: 0.2rem;
+  cursor: text;
+}
