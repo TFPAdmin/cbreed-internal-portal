@@ -37,12 +37,6 @@
       margin: 0.5rem 0;
     }
 
-    .brainstorm-notes {
-      margin-top: 0.5rem;
-      list-style-type: disc;
-      padding-left: 1rem;
-    }
-
     form {
       display: flex;
       flex-direction: column;
@@ -65,15 +59,17 @@
     <h1>📝 Writer Workspace</h1>
 
     <div class="workspace">
-      <!-- Left Column: Chapters -->
+      <!-- Chapters -->
       <div class="half writer-column">
         <section>
           <h3>📖 Chapters</h3>
           <ul id="chapters"></ul>
-        
+        </section>
+
         <section id="working-on">
           <strong>Working on:</strong> <span contenteditable="true" id="current-book">Untitled Book</span>
-        
+        </section>
+
         <section id="new-chapter">
           <h3>Add New Chapter</h3>
           <form id="chapter-form">
@@ -87,8 +83,6 @@
           <button id="publish-btn">📤 Publish Book to Shelf</button>
         </section>
       </div>
-
-</div>
     </div>
   </div>
 
@@ -155,7 +149,6 @@
     });
 
     loadChapters();
-    loadNotes();
   </script>
 </body>
 </html>
