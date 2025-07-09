@@ -11,19 +11,23 @@
       flex-wrap: wrap;
       gap: 1.2rem;
     }
+
     .half {
       flex: 1 1 400px;
       min-width: 300px;
     }
+
     .writer-column {
       display: flex;
       flex-direction: column;
       gap: 1rem;
     }
+
     textarea, input[type="text"] {
       width: 100%;
       box-sizing: border-box;
     }
+
     #working-on {
       text-align: center;
       font-size: 1.1rem;
@@ -32,14 +36,17 @@
       border-radius: 6px;
       margin: 0.5rem 0;
     }
+
     form {
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
     }
+
     section {
       margin-bottom: 0.5rem;
     }
+
     #chapter-viewer {
       white-space: pre-wrap;
       background: #f9f9f9;
@@ -134,19 +141,20 @@
         chapterSelect.innerHTML = '<option value="">Select a chapter</option>';
 
         data.forEach(ch => {
-          // Chapter list for editing
+          // Editing list
           const li = document.createElement("li");
           li.innerHTML = `<strong>Chapter ${ch.chapter_number}: ${ch.chapter_title || "Untitled"}</strong><br>
             <button onclick="editChapter('${ch.id}')">✏️ Edit</button>`;
           chaptersList.appendChild(li);
 
-          // Dropdown option
+          // Reading dropdown
           const opt = document.createElement("option");
           opt.value = ch.id;
           opt.textContent = `Chapter ${ch.chapter_number}: ${ch.chapter_title || "Untitled"}`;
           chapterSelect.appendChild(opt);
         });
       } catch (err) {
+        console.error(err);
         chaptersList.innerHTML = "<li>Error loading chapters.</li>";
       }
     }
@@ -193,10 +201,14 @@
     chapterSelect.addEventListener("change", () => {
       const selectedId = chapterSelect.value;
       const chapter = allChapters.find(ch => ch.id === selectedId);
-      chapterViewer.textContent = chapter ? chapter.content : "Select a chapter to read it here.";
+      if (chapter) {
+        chapterViewer.textContent = chapter.content;
+      } else {
+        chapterViewer.textContent = "Select a chapter to read it here.";
+      }
     });
 
-    // Re-load chapters when user updates the book title
+    // Auto refresh chapter list when book title changes
     bookTitleField.addEventListener("blur", loadChapters);
     bookTitleField.addEventListener("keydown", e => {
       if (e.key === "Enter") {
