@@ -1,1 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - C.B.Reed Internal</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="login-container">
+    <img src="https://cdn-icons-png.flaticon.com/512/29/29302.png" alt="Bookshelf Icon" class="login-icon" />
+    <h1>C.B.Reed Internal Use Only</h1>
 
+    <form id="login-form">
+      <input type="password" id="password" placeholder="Enter password" required />
+      <button type="submit">Login</button>
+    </form>
+  </div>
+
+  <script>
+    const password = "Write4Fun62615!";
+
+    document.getElementById("login-form").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const entered = document.getElementById("password").value;
+      if (entered === password) {
+        window.location.href = "bookshelf.html";
+      } else {
+        alert("Incorrect password");
+      }
+    });
+  </script>
+</body>
+</html>
