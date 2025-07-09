@@ -26,6 +26,12 @@
       list-style-type: disc;
       padding-left: 1rem;
     }
+
+    #working-on {
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+    }
   </style>
 </head>
 <body>
@@ -37,7 +43,6 @@
 
   <div class="container">
     <h1>📝 Writer Workspace</h1>
-    <h2 id="book-title">Working on: <span contenteditable="true" id="current-book">Untitled Book</span></h2>
 
     <div class="workspace">
       <!-- Left Side: Chapters -->
@@ -47,7 +52,11 @@
           <ul id="chapters"></ul>
         </section>
 
-        <section id="new-chapter" style="margin-top: 1rem;">
+        <section id="working-on">
+          <strong>Working on:</strong> <span contenteditable="true" id="current-book">Untitled Book</span>
+        </section>
+
+        <section id="new-chapter">
           <h3>Add New Chapter</h3>
           <form id="chapter-form">
             <input type="text" id="chapter-title" placeholder="Chapter Title" required><br>
@@ -62,7 +71,7 @@
       </div>
 
       <!-- Right Side: Brainstorm -->
-      <div class="half">
+      <div class="half" style="margin-top: 4rem;">
         <section>
           <h3>🧠 Brainstorm</h3>
           <form id="brainstorm-form">
