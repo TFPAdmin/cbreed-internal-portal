@@ -17,8 +17,24 @@
       min-width: 300px;
     }
 
-    textarea {
+    .writer-column {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    textarea, input[type="text"] {
       width: 100%;
+      box-sizing: border-box;
+    }
+
+    #working-on {
+      text-align: center;
+      font-size: 1.1rem;
+      background: #f4f4f4;
+      padding: 0.6rem;
+      border-radius: 6px;
+      margin: 0.5rem 0;
     }
 
     .brainstorm-notes {
@@ -27,23 +43,14 @@
       padding-left: 1rem;
     }
 
-    .writer-column {
+    form {
       display: flex;
       flex-direction: column;
-      justify-content: flex-start;
-    }
-
-    #working-on {
-      margin: 1rem 0;
-      text-align: center;
-      font-size: 1.1rem;
-      background: #f4f4f4;
-      padding: 0.4rem;
-      border-radius: 6px;
+      gap: 0.5rem;
     }
 
     section {
-      margin-bottom: 1rem;
+      margin-bottom: 0.5rem;
     }
   </style>
 </head>
@@ -58,7 +65,7 @@
     <h1>📝 Writer Workspace</h1>
 
     <div class="workspace">
-      <!-- Left Side: Chapters -->
+      <!-- Left Column: Chapters -->
       <div class="half writer-column">
         <section>
           <h3>📖 Chapters</h3>
@@ -72,8 +79,8 @@
         <section id="new-chapter">
           <h3>Add New Chapter</h3>
           <form id="chapter-form">
-            <input type="text" id="chapter-title" placeholder="Chapter Title" required><br>
-            <textarea id="chapter-content" placeholder="Start writing your chapter here..." rows="8" required></textarea><br>
+            <input type="text" id="chapter-title" placeholder="Chapter Title" required>
+            <textarea id="chapter-content" placeholder="Start writing your chapter here..." rows="8" required></textarea>
             <button type="submit">Save Chapter</button>
           </form>
         </section>
@@ -83,12 +90,12 @@
         </section>
       </div>
 
-      <!-- Right Side: Brainstorm -->
-      <div class="half" style="margin-top: 2.5rem;">
+      <!-- Right Column: Brainstorm -->
+      <div class="half">
         <section>
           <h3>🧠 Brainstorm</h3>
           <form id="brainstorm-form">
-            <textarea id="brainstorm-text" rows="4" placeholder="Type a new idea..." required></textarea><br>
+            <textarea id="brainstorm-text" rows="5" placeholder="Type a new idea..." required></textarea>
             <button type="submit">➕ Add Idea</button>
           </form>
 
