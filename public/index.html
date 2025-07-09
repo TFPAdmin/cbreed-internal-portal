@@ -18,12 +18,17 @@
   </div>
 
   <script>
-    const password = "Write4Fun62615!";
-
-    document.getElementById("login-form").addEventListener("submit", function(e) {
+    document.getElementById("login-form").addEventListener("submit", async function(e) {
       e.preventDefault();
       const entered = document.getElementById("password").value;
-      if (entered === password) {
+
+      const res = await fetch("/api/verify-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: entered })
+      });
+
+      if (res.ok) {
         window.location.href = "home.html";
       } else {
         alert("Incorrect password");
