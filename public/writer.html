@@ -9,7 +9,7 @@
     .workspace {
       display: flex;
       flex-wrap: wrap;
-      gap: 2rem;
+      gap: 1.2rem;
     }
 
     .half {
@@ -22,7 +22,7 @@
     }
 
     .brainstorm-notes {
-      margin-top: 1rem;
+      margin-top: 0.5rem;
       list-style-type: disc;
       padding-left: 1rem;
     }
@@ -34,12 +34,16 @@
     }
 
     #working-on {
-      margin: 2rem 0 1rem;
+      margin: 1rem 0;
       text-align: center;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       background: #f4f4f4;
-      padding: 0.5rem;
+      padding: 0.4rem;
       border-radius: 6px;
+    }
+
+    section {
+      margin-bottom: 1rem;
     }
   </style>
 </head>
@@ -69,22 +73,22 @@
           <h3>Add New Chapter</h3>
           <form id="chapter-form">
             <input type="text" id="chapter-title" placeholder="Chapter Title" required><br>
-            <textarea id="chapter-content" placeholder="Start writing your chapter here..." rows="10" required></textarea><br>
+            <textarea id="chapter-content" placeholder="Start writing your chapter here..." rows="8" required></textarea><br>
             <button type="submit">Save Chapter</button>
           </form>
         </section>
 
-        <section style="margin-top: 2rem;">
+        <section>
           <button id="publish-btn">📤 Publish Book to Shelf</button>
         </section>
       </div>
 
       <!-- Right Side: Brainstorm -->
-      <div class="half" style="margin-top: 4rem;">
+      <div class="half" style="margin-top: 2.5rem;">
         <section>
           <h3>🧠 Brainstorm</h3>
           <form id="brainstorm-form">
-            <textarea id="brainstorm-text" rows="5" placeholder="Type a new idea..." required></textarea><br>
+            <textarea id="brainstorm-text" rows="4" placeholder="Type a new idea..." required></textarea><br>
             <button type="submit">➕ Add Idea</button>
           </form>
 
