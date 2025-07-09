@@ -185,3 +185,40 @@ form button {
   opacity: 0.5;
   pointer-events: none;
 }
+.settings-group {
+  background: #fff;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.settings-group h3 {
+  margin-top: 0;
+}
+
+.settings-group label,
+.settings-group select {
+  display: block;
+  margin-top: 0.75rem;
+  font-size: 1rem;
+}
+
+body.dark-mode {
+  background: #1e1e1e;
+  color: #f4f4f4;
+}
+
+body.dark-mode .settings-group {
+  background: #2e2e2e;
+  border-color: #555;
+}
+
+body.dark-mode select,
+body.dark-mode input,
+body.dark-mode button {
+  background: #444;
+  color: white;
+  border: 1px solid #777;
+}
