@@ -88,27 +88,6 @@
         </section>
       </div>
 
-     <!-- Right Column: Brainstorm -->
-<div class="half" style="margin-top: 5.6rem;">
-  <section>
-    <h3>Brainstorm</h3>
-
-    <!-- Dropdown to select past ideas -->
-    <label for="brainstorm-select">💡 Select a past idea:</label>
-    <select id="brainstorm-select">
-      <option value="">-- Choose an idea --</option>
-    </select>
-
-    <!-- Brainstorm idea form -->
-    <form id="brainstorm-form">
-      <textarea id="brainstorm-text" rows="5" placeholder="Type a new idea..." required></textarea>
-      <button type="submit">➕ Add Idea</button>
-    </form>
-
-    <ul id="brainstorm-list" class="brainstorm-notes"></ul>
-  </section>
-</div>
-
 </div>
     </div>
   </div>
@@ -173,37 +152,6 @@
       });
 
       alert("Book published to bookshelf!");
-    });
-
-    // Brainstorm logic
-    const brainstormForm = document.getElementById("brainstorm-form");
-    const brainstormInput = document.getElementById("brainstorm-text");
-    const brainstormList = document.getElementById("brainstorm-list");
-
-    async function loadNotes() {
-      brainstormList.innerHTML = "<li>Loading...</li>";
-      const res = await fetch("/api/get-brainstorm");
-      const notes = await res.json();
-      brainstormList.innerHTML = "";
-      notes.forEach(note => {
-        const li = document.createElement("li");
-        li.textContent = note.text;
-        brainstormList.appendChild(li);
-      });
-    }
-
-    brainstormForm.addEventListener("submit", async e => {
-      e.preventDefault();
-      await fetch("/api/add-brainstorm", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id: crypto.randomUUID(),
-          text: brainstormInput.value
-        })
-      });
-      brainstormInput.value = "";
-      loadNotes();
     });
 
     loadChapters();
