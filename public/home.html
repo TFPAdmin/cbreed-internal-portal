@@ -7,6 +7,12 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <script>
+    if (localStorage.getItem("authenticated") !== "true") {
+      window.location.href = "index.html";
+    }
+  </script>
+
   <div class="container">
     <h1>📚 Welcome, C.B.Reed</h1>
     <h2 style="text-align: center; margin-bottom: 2rem;">Select a Section</h2>
