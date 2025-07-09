@@ -2,21 +2,19 @@ export async function onRequestPost(context) {
   try {
     const DB = context.env.DB;
     const data = await context.request.json();
+    const { id, text } = data;
 
-    const { id, topic, note } = data;
-
-    if (!id || !note) {
-      return new Response("Missing required fields", { status: 400 });
+    if (!id || !text) {
+      return new Response("Missing id or text", { status: 400 });
     }
 
-    await DB.prepare(`
-      INSERT INTO brainstorm (id, topic, note)
-      VALUES (?, ?, ?)
-    `).bind(id, topic, note).run();
+    await DB.prepare(
+      `INSERT INTO brainstorm (id, text) VALUES (?, ?)`
+    ).bind(id, text).run();
 
-    return new Response("Brainstorm note added", { status: 200 });
+    return new Response("Idea added successfully", { status: 200 });
   } catch (err) {
     console.error("Add Brainstorm Error:", err);
-    return new Response("Failed to add brainstorm note", { status: 500 });
+    return new Response("Failed to add idea", { status: 500 });
   }
 }
