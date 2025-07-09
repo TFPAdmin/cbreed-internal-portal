@@ -179,9 +179,19 @@
       await loadChapters();
     });
 
-    function editChapter(id) {
-      alert("Edit functionality coming soon for chapter ID: " + id);
-    }
+   let editingChapterId = null;
+
+function editChapter(id) {
+  const chapter = allChapters.find(ch => ch.id === id);
+  if (!chapter) return;
+
+  editingChapterId = id;
+  document.getElementById("chapter-title").value = chapter.chapter_title || "";
+  document.getElementById("chapter-content").value = chapter.content || "";
+
+  document.querySelector("#chapter-form button").textContent = "Update Chapter";
+}
+
 
     document.getElementById("publish-btn").addEventListener("click", async () => {
       const confirm = window.confirm("Are you sure you want to publish this book?");
