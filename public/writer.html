@@ -11,23 +11,19 @@
       flex-wrap: wrap;
       gap: 1.2rem;
     }
-
     .half {
       flex: 1 1 400px;
       min-width: 300px;
     }
-
     .writer-column {
       display: flex;
       flex-direction: column;
       gap: 1rem;
     }
-
     textarea, input[type="text"] {
       width: 100%;
       box-sizing: border-box;
     }
-
     #working-on {
       text-align: center;
       font-size: 1.1rem;
@@ -36,17 +32,14 @@
       border-radius: 6px;
       margin: 0.5rem 0;
     }
-
     form {
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
     }
-
     section {
       margin-bottom: 0.5rem;
     }
-
     #chapter-viewer {
       white-space: pre-wrap;
       background: #f9f9f9;
@@ -70,7 +63,7 @@
     <h1>📝 Writer Workspace</h1>
 
     <div class="workspace">
-      <!-- Left Column: Writing -->
+      <!-- Left Column -->
       <div class="half writer-column">
         <section>
           <h3>📖 Chapters</h3>
@@ -78,7 +71,8 @@
         </section>
 
         <section id="working-on">
-          <strong>Working on:</strong> <span contenteditable="true" id="current-book">Untitled Book</span>
+          <strong>Working on:</strong>
+          <span contenteditable="true" id="current-book">Untitled Book</span>
         </section>
 
         <section id="new-chapter">
@@ -95,7 +89,7 @@
         </section>
       </div>
 
-      <!-- Right Column: Chapter Reader -->
+      <!-- Right Column -->
       <div class="half writer-column">
         <section>
           <h3>📚 Read Chapters</h3>
@@ -116,89 +110,102 @@
   </footer>
 
   <script>
-    <!-- Keep everything above this as-is -->
+    const chaptersList = document.getElementById("chapters");
+    const chapterSelect = document.getElementById("chapter-select");
+    const chapterViewer = document.getElementById("chapter-viewer");
+    const bookTitleField = document.getElementById("current-book");
 
-<script>
-  const chaptersList = document.getElementById("chapters");
-  const chapterSelect = document.getElementById("chapter-select");
-  const chapterViewer = document.getElementById("chapter-viewer");
-  const bookTitleField = document.getElementById("current-book");
+    let allChapters = [];
 
-  let allChapters = [];
+    async function loadChapters() {
+      const bookTitle = bookTitleField.textContent.trim();
 
-  async function loadChapters() {
-    const bookTitle = bookTitleField.textContent.trim();
-    const res = await fetch(`/api/get-chapters?book_title=${encodeURIComponent(bookTitle)}`);
-    const data = await res.json();
-    allChapters = data;
+      if (!bookTitle) {
+        chaptersList.innerHTML = "<li>No book title set.</li>";
+        return;
+      }
 
-    chaptersList.innerHTML = "";
-    chapterSelect.innerHTML = '<option value="">Select a chapter</option>';
+      try {
+        const res = await fetch(`/api/get-chapters?book_title=${encodeURIComponent(bookTitle)}`);
+        const data = await res.json();
+        allChapters = data;
 
-    data.forEach(ch => {
-      // Chapter list for editing
-      const li = document.createElement("li");
-      li.innerHTML = `<strong>Chapter ${ch.chapter_number}: ${ch.chapter_title || "Untitled"}</strong><br>
-        <button onclick="editChapter('${ch.id}')">✏️ Edit</button>`;
-      chaptersList.appendChild(li);
+        chaptersList.innerHTML = "";
+        chapterSelect.innerHTML = '<option value="">Select a chapter</option>';
 
-      // Dropdown option
-      const opt = document.createElement("option");
-      opt.value = ch.id;
-      opt.textContent = `Chapter ${ch.chapter_number}: ${ch.chapter_title || "Untitled"}`;
-      chapterSelect.appendChild(opt);
-    });
-  }
+        data.forEach(ch => {
+          // Chapter list for editing
+          const li = document.createElement("li");
+          li.innerHTML = `<strong>Chapter ${ch.chapter_number}: ${ch.chapter_title || "Untitled"}</strong><br>
+            <button onclick="editChapter('${ch.id}')">✏️ Edit</button>`;
+          chaptersList.appendChild(li);
 
-  document.getElementById("chapter-form").addEventListener("submit", async function (e) {
-    e.preventDefault();
-    const chapterTitle = document.getElementById("chapter-title").value;
-    const chapterContent = document.getElementById("chapter-content").value;
-    const bookTitle = bookTitleField.textContent.trim();
-
-    await fetch("/api/add-chapter", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        id: crypto.randomUUID(),
-        book_title: bookTitle,
-        chapter_title: chapterTitle,
-        chapter_number: Date.now(),
-        content: chapterContent
-      })
-    });
-
-    document.getElementById("chapter-form").reset();
-    await loadChapters();
-  });
-
-  function editChapter(id) {
-    alert("Edit functionality coming soon for chapter ID: " + id);
-  }
-
-  document.getElementById("publish-btn").addEventListener("click", async () => {
-    const confirm = window.confirm("Are you sure you want to publish this book?");
-    if (!confirm) return;
-
-    await fetch("/api/publish-book", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ book_title: bookTitleField.textContent.trim() })
-    });
-
-    alert("Book published to bookshelf!");
-  });
-
-  chapterSelect.addEventListener("change", () => {
-    const selectedId = chapterSelect.value;
-    const chapter = allChapters.find(ch => ch.id === selectedId);
-    if (chapter) {
-      chapterViewer.textContent = chapter.content;
-    } else {
-      chapterViewer.textContent = "Select a chapter to read it here.";
+          // Dropdown option
+          const opt = document.createElement("option");
+          opt.value = ch.id;
+          opt.textContent = `Chapter ${ch.chapter_number}: ${ch.chapter_title || "Untitled"}`;
+          chapterSelect.appendChild(opt);
+        });
+      } catch (err) {
+        chaptersList.innerHTML = "<li>Error loading chapters.</li>";
+      }
     }
-  });
 
-  loadChapters();
-</script>
+    document.getElementById("chapter-form").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const chapterTitle = document.getElementById("chapter-title").value;
+      const chapterContent = document.getElementById("chapter-content").value;
+      const bookTitle = bookTitleField.textContent.trim();
 
+      await fetch("/api/add-chapter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: crypto.randomUUID(),
+          book_title: bookTitle,
+          chapter_title: chapterTitle,
+          chapter_number: Date.now(),
+          content: chapterContent
+        })
+      });
+
+      document.getElementById("chapter-form").reset();
+      await loadChapters();
+    });
+
+    function editChapter(id) {
+      alert("Edit functionality coming soon for chapter ID: " + id);
+    }
+
+    document.getElementById("publish-btn").addEventListener("click", async () => {
+      const confirm = window.confirm("Are you sure you want to publish this book?");
+      if (!confirm) return;
+
+      await fetch("/api/publish-book", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ book_title: bookTitleField.textContent.trim() })
+      });
+
+      alert("Book published to bookshelf!");
+    });
+
+    chapterSelect.addEventListener("change", () => {
+      const selectedId = chapterSelect.value;
+      const chapter = allChapters.find(ch => ch.id === selectedId);
+      chapterViewer.textContent = chapter ? chapter.content : "Select a chapter to read it here.";
+    });
+
+    // Re-load chapters when user updates the book title
+    bookTitleField.addEventListener("blur", loadChapters);
+    bookTitleField.addEventListener("keydown", e => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        bookTitleField.blur();
+      }
+    });
+
+    loadChapters();
+  </script>
+</body>
+</html>
