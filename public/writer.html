@@ -46,6 +46,17 @@
     section {
       margin-bottom: 0.5rem;
     }
+
+    #chapter-viewer {
+      white-space: pre-wrap;
+      background: #f9f9f9;
+      padding: 0.8rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      min-height: 150px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
   </style>
 </head>
 <body>
@@ -59,7 +70,7 @@
     <h1>📝 Writer Workspace</h1>
 
     <div class="workspace">
-      <!-- Chapters -->
+      <!-- Left Column: Writing -->
       <div class="half writer-column">
         <section>
           <h3>📖 Chapters</h3>
@@ -83,6 +94,17 @@
           <button id="publish-btn">📤 Publish Book to Shelf</button>
         </section>
       </div>
+
+      <!-- Right Column: Chapter Reader -->
+      <div class="half writer-column">
+        <section>
+          <h3>📚 Read Chapters</h3>
+          <select id="chapter-select">
+            <option value="">Select a chapter</option>
+          </select>
+          <div id="chapter-viewer">Select a chapter to read it here.</div>
+        </section>
+      </div>
     </div>
   </div>
 
@@ -95,17 +117,32 @@
 
   <script>
     const chaptersList = document.getElementById("chapters");
+    const chapterSelect = document.getElementById("chapter-select");
+    const chapterViewer = document.getElementById("chapter-viewer");
     const bookTitleField = document.getElementById("current-book");
+
+    let allChapters = [];
 
     async function loadChapters() {
       const res = await fetch("/api/get-chapters");
       const data = await res.json();
+      allChapters = data;
+
       chaptersList.innerHTML = "";
+      chapterSelect.innerHTML = '<option value="">Select a chapter</option>';
+
       data.forEach(ch => {
+        // Chapter list for editing
         const li = document.createElement("li");
         li.innerHTML = `<strong>Chapter ${ch.chapter_number}: ${ch.chapter_title || "Untitled"}</strong><br>
           <button onclick="editChapter('${ch.id}')">✏️ Edit</button>`;
         chaptersList.appendChild(li);
+
+        // Dropdown option
+        const opt = document.createElement("option");
+        opt.value = ch.id;
+        opt.textContent = `Chapter ${ch.chapter_number}: ${ch.chapter_title || "Untitled"}`;
+        chapterSelect.appendChild(opt);
       });
     }
 
@@ -128,7 +165,7 @@
       });
 
       document.getElementById("chapter-form").reset();
-      loadChapters();
+      await loadChapters();
     });
 
     function editChapter(id) {
@@ -146,6 +183,16 @@
       });
 
       alert("Book published to bookshelf!");
+    });
+
+    chapterSelect.addEventListener("change", () => {
+      const selectedId = chapterSelect.value;
+      const chapter = allChapters.find(ch => ch.id === selectedId);
+      if (chapter) {
+        chapterViewer.textContent = chapter.content;
+      } else {
+        chapterViewer.textContent = "Select a chapter to read it here.";
+      }
     });
 
     loadChapters();
