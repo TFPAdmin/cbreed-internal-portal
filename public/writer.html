@@ -70,7 +70,7 @@
     <h1>📝 Writer Workspace</h1>
 
     <div class="workspace">
-      <!-- Left Column -->
+      <!-- Left Column: Writing -->
       <div class="half writer-column">
         <section>
           <h3>📖 Chapters</h3>
@@ -78,8 +78,7 @@
         </section>
 
         <section id="working-on">
-          <strong>Working on:</strong>
-          <span contenteditable="true" id="current-book">Untitled Book</span>
+          <strong>Working on:</strong> <span contenteditable="true" id="current-book">Untitled Book</span>
         </section>
 
         <section id="new-chapter">
@@ -96,7 +95,7 @@
         </section>
       </div>
 
-      <!-- Right Column -->
+      <!-- Right Column: Chapter Reader -->
       <div class="half writer-column">
         <section>
           <h3>📚 Read Chapters</h3>
@@ -126,37 +125,36 @@
 
     async function loadChapters() {
       const bookTitle = bookTitleField.textContent.trim();
-
       if (!bookTitle) {
-        chaptersList.innerHTML = "<li>No book title set.</li>";
+        chapterViewer.textContent = "Please enter a book title above.";
         return;
       }
 
-      try {
-        const res = await fetch(`/api/get-chapters?book_title=${encodeURIComponent(bookTitle)}`);
-        const data = await res.json();
-        allChapters = data;
-
-        chaptersList.innerHTML = "";
-        chapterSelect.innerHTML = '<option value="">Select a chapter</option>';
-
-        data.forEach(ch => {
-          // Editing list
-          const li = document.createElement("li");
-          li.innerHTML = `<strong>Chapter ${ch.chapter_number}: ${ch.chapter_title || "Untitled"}</strong><br>
-            <button onclick="editChapter('${ch.id}')">✏️ Edit</button>`;
-          chaptersList.appendChild(li);
-
-          // Reading dropdown
-          const opt = document.createElement("option");
-          opt.value = ch.id;
-          opt.textContent = `Chapter ${ch.chapter_number}: ${ch.chapter_title || "Untitled"}`;
-          chapterSelect.appendChild(opt);
-        });
-      } catch (err) {
-        console.error(err);
-        chaptersList.innerHTML = "<li>Error loading chapters.</li>";
+      const res = await fetch(`/api/get-chapters?book_title=${encodeURIComponent(bookTitle)}`);
+      if (!res.ok) {
+        chapterViewer.textContent = "Failed to load chapters.";
+        return;
       }
+
+      const data = await res.json();
+      allChapters = data;
+
+      chaptersList.innerHTML = "";
+      chapterSelect.innerHTML = '<option value="">Select a chapter</option>';
+
+      data.forEach(ch => {
+        // Chapter list for editing
+        const li = document.createElement("li");
+        li.innerHTML = `<strong>Chapter ${ch.chapter_number}: ${ch.chapter_title || "Untitled"}</strong><br>
+          <button onclick="editChapter('${ch.id}')">✏️ Edit</button>`;
+        chaptersList.appendChild(li);
+
+        // Dropdown option
+        const opt = document.createElement("option");
+        opt.value = ch.id;
+        opt.textContent = `Chapter ${ch.chapter_number}: ${ch.chapter_title || "Untitled"}`;
+        chapterSelect.appendChild(opt);
+      });
     }
 
     document.getElementById("chapter-form").addEventListener("submit", async function (e) {
@@ -205,15 +203,6 @@
         chapterViewer.textContent = chapter.content;
       } else {
         chapterViewer.textContent = "Select a chapter to read it here.";
-      }
-    });
-
-    // Auto refresh chapter list when book title changes
-    bookTitleField.addEventListener("blur", loadChapters);
-    bookTitleField.addEventListener("keydown", e => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        bookTitleField.blur();
       }
     });
 
