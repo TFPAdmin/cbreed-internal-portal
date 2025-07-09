@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
   async function loadBooks() {
     bookList.innerHTML = "<li>Loading books...</li>";
     try {
-      const res = await fetch("/api/get-books");
+      const res = await fetch("/get-books"); // ✅ Corrected path
       const books = await res.json();
       bookList.innerHTML = "";
 
