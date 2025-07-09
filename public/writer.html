@@ -7,6 +7,12 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <script>
+    if (localStorage.getItem("authenticated") !== "true") {
+      window.location.href = "index.html";
+    }
+  </script>
+
   <div class="container">
     <h1>📖 Writing Dashboard</h1>
     <h2 id="book-title">Working on: <span contenteditable="true" id="current-book">Untitled Book</span></h2>
