@@ -91,7 +91,15 @@
      <!-- Right Column: Brainstorm -->
 <div class="half" style="margin-top: 5.6rem;">
   <section>
-    <h3>🧠 Brainstorm</h3>
+    <h3>Brainstorm</h3>
+
+    <!-- Dropdown to select past ideas -->
+    <label for="brainstorm-select">💡 Select a past idea:</label>
+    <select id="brainstorm-select">
+      <option value="">-- Choose an idea --</option>
+    </select>
+
+    <!-- Brainstorm idea form -->
     <form id="brainstorm-form">
       <textarea id="brainstorm-text" rows="5" placeholder="Type a new idea..." required></textarea>
       <button type="submit">➕ Add Idea</button>
@@ -99,6 +107,8 @@
 
     <ul id="brainstorm-list" class="brainstorm-notes"></ul>
   </section>
+</div>
+
 </div>
     </div>
   </div>
