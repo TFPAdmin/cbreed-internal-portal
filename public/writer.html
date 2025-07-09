@@ -27,10 +27,19 @@
       padding-left: 1rem;
     }
 
+    .writer-column {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+
     #working-on {
-      margin-top: 1rem;
-      margin-bottom: 1rem;
+      margin: 2rem 0 1rem;
+      text-align: center;
       font-size: 1.2rem;
+      background: #f4f4f4;
+      padding: 0.5rem;
+      border-radius: 6px;
     }
   </style>
 </head>
@@ -46,7 +55,7 @@
 
     <div class="workspace">
       <!-- Left Side: Chapters -->
-      <div class="half">
+      <div class="half writer-column">
         <section>
           <h3>📖 Chapters</h3>
           <ul id="chapters"></ul>
@@ -121,7 +130,7 @@
           id: crypto.randomUUID(),
           book_title: bookTitle,
           chapter_title: chapterTitle,
-          chapter_number: Date.now(), // can be replaced with manual number
+          chapter_number: Date.now(),
           content: chapterContent
         })
       });
