@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Settings - C.B.Reed</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>⚙️ Settings</h1>
+
+    <section class="settings-group">
+      <h3>🌓 Theme</h3>
+      <label><input type="checkbox" id="dark-mode-toggle" /> Enable Dark Mode</label>
+    </section>
+
+    <section class="settings-group">
+      <h3>🔤 Font Preferences</h3>
+      <label for="font-select">Font Style:</label>
+      <select id="font-select">
+        <option value="Georgia">Serif (Georgia)</option>
+        <option value="Arial">Sans-serif (Arial)</option>
+        <option value="Courier New">Monospace (Courier New)</option>
+      </select>
+
+      <label for="font-size-select">Font Size:</label>
+      <select id="font-size-select">
+        <option value="14px">Small</option>
+        <option value="16px" selected>Medium</option>
+        <option value="18px">Large</option>
+      </select>
+    </section>
+
+    <section class="settings-group">
+      <h3>📦 Export Data</h3>
+      <button onclick="exportData('chapters')">Export Chapters</button>
+      <button onclick="exportData('brainstorm')">Export Brainstorm Notes</button>
+    </section>
+  </div>
+
+  <script src="settings.js"></script>
+</body>
+</html>
