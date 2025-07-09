@@ -150,3 +150,38 @@ form button {
   padding: 0.2rem;
   cursor: text;
 }
+
+/* Home Page Bookshelf Buttons */
+.bookshelf-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 2rem;
+  padding: 1rem;
+  max-width: 800px;
+  margin: auto;
+}
+
+.shelf-button {
+  background: #fff;
+  border: 2px solid #888;
+  padding: 2rem 1rem;
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-decoration: none;
+  color: #333;
+  border-radius: 10px;
+  box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+  transition: all 0.2s ease-in-out;
+}
+
+.shelf-button:hover {
+  background: #f5f5f5;
+  transform: translateY(-3px);
+  box-shadow: 3px 3px 12px rgba(0,0,0,0.15);
+}
+
+.shelf-button.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
