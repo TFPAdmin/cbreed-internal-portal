@@ -1,1 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bookshelf Manager</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Bookshelf Manager</h1>
 
+    <section id="book-list">
+      <h2>Current Books</h2>
+      <ul id="books"></ul>
+    </section>
+
+    <section id="add-book">
+      <h2>Add New Book</h2>
+      <form id="book-form">
+        <input type="text" name="title" placeholder="Title" required><br>
+        <input type="text" name="subtitle" placeholder="Subtitle"><br>
+        <textarea name="excerpt" placeholder="Excerpt"></textarea><br>
+        <input type="url" name="cover" placeholder="Cover Image URL"><br>
+        <input type="url" name="wattpad" placeholder="Wattpad Link"><br>
+        <button type="submit">Add Book</button>
+      </form>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
