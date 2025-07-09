@@ -222,3 +222,22 @@ body.dark-mode button {
   color: white;
   border: 1px solid #777;
 }
+.site-map {
+  text-align: center;
+  margin-top: 4rem;
+  padding-top: 1rem;
+  border-top: 1px solid #ccc;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.site-map a {
+  text-decoration: none;
+  color: #444;
+  margin: 0 0.5rem;
+}
+
+.site-map a:hover {
+  color: #000;
+  text-decoration: underline;
+}
