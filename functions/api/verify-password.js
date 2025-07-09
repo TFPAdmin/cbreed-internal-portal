@@ -7,7 +7,7 @@ export async function onRequestPost(context) {
       return new Response("Missing password", { status: 400 });
     }
 
-    const { results } = await DB.prepare(`SELECT password FROM admin_passwords`).all();
+    const { results } = await DB.prepare(`SELECT password FROM admin_settings`).all();
 
     const match = results.some(row => row.password === password);
 
