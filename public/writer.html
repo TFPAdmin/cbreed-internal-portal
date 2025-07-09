@@ -34,7 +34,6 @@
       background: #f4f4f4;
       padding: 0.6rem;
       border-radius: 6px;
-      margin: 0.5rem 0;
     }
 
     .brainstorm-notes {
@@ -65,14 +64,18 @@
     <h1>📝 Writer Workspace</h1>
 
     <div class="workspace">
-      <!-- Left Column: Chapters -->
+      <!-- Left Column -->
       <div class="half writer-column">
         <section>
           <h3>📖 Chapters</h3>
           <ul id="chapters"></ul>
-          <section id="working-on">
-          <strong>Working on:</strong> <span contenteditable="true" id="current-book">Untitled Book</span>
-        
+        </section>
+
+        <section id="working-on">
+          <strong>Working on:</strong>
+          <span contenteditable="true" id="current-book">Untitled Book</span>
+        </section>
+
         <section id="new-chapter">
           <h3>Add New Chapter</h3>
           <form id="chapter-form">
@@ -87,12 +90,12 @@
         </section>
       </div>
 
-      <!-- Right Column: Brainstorm -->
-      <div class="half">
+      <!-- Right Column -->
+      <div class="half writer-column">
         <section>
           <h3>🧠 Brainstorm</h3>
           <form id="brainstorm-form">
-            <textarea id="brainstorm-text" rows="5" placeholder="Type a new idea..." required></textarea>
+            <textarea id="brainstorm-text" rows="8" placeholder="Type a new idea..." required></textarea>
             <button type="submit">➕ Add Idea</button>
           </form>
 
