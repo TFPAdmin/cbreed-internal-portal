@@ -7,7 +7,7 @@ export async function onRequestPost(context) {
       return new Response("Missing book title", { status: 400 });
     }
 
-    // Fetch chapters for the given book
+    // Fetch chapters to build excerpt
     const { results: chapters } = await DB.prepare(`
       SELECT chapter_number, chapter_title, content
       FROM chapters
@@ -15,43 +15,46 @@ export async function onRequestPost(context) {
       ORDER BY chapter_number ASC
     `).bind(book_title).all();
 
-    if (chapters.length === 0) {
+    if (!chapters || chapters.length === 0) {
       return new Response("No chapters found to publish", { status: 404 });
     }
 
-    // Build excerpt from all chapter content
     const excerpt = chapters.map(ch =>
       `Chapter ${ch.chapter_number}: ${ch.chapter_title || ""}\n${ch.content}\n\n`
     ).join("");
 
-    // Fetch additional details from wip_books
-    const { results: wipBook } = await DB.prepare(`
-      SELECT subtitle, cover, wattpad
+    // Get WIP book details
+    const wipBook = await DB.prepare(`
+      SELECT id, subtitle, cover, wattpad, created_at
       FROM wip_books
       WHERE title = ?
       LIMIT 1
-    `).bind(book_title).all();
+    `).bind(book_title).first();
 
-    if (wipBook.length === 0) {
+    if (!wipBook) {
       return new Response("WIP book not found", { status: 404 });
     }
 
-    const { subtitle, cover, wattpad } = wipBook[0];
-
-    // Insert into published books table
-    const id = crypto.randomUUID();
+    // Insert into published books
     await DB.prepare(`
-      INSERT INTO books (id, title, subtitle, excerpt, cover, wattpad)
-      VALUES (?, ?, ?, ?, ?, ?)
-    `).bind(id, book_title, subtitle, excerpt, cover, wattpad).run();
+      INSERT INTO books (id, title, subtitle, excerpt, cover, wattpad, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `).bind(
+      wipBook.id,
+      book_title,
+      wipBook.subtitle,
+      excerpt,
+      wipBook.cover,
+      wipBook.wattpad,
+      wipBook.created_at || new Date().toISOString()
+    ).run();
 
-    // Optional: Delete from wip_books
+    // Delete from WIP
     await DB.prepare(`
-      DELETE FROM wip_books WHERE title = ?
-    `).bind(book_title).run();
+      DELETE FROM wip_books WHERE id = ?
+    `).bind(wipBook.id).run();
 
     return new Response("Book published successfully", { status: 200 });
-
   } catch (err) {
     console.error("Publish Book Error:", err);
     return new Response("Failed to publish book", { status: 500 });
