@@ -19,17 +19,39 @@ export async function onRequestPost(context) {
       return new Response("No chapters found to publish", { status: 404 });
     }
 
-    // Build excerpt by combining all chapter content
-    const excerpt = chapters.map(ch => `Chapter ${ch.chapter_number}: ${ch.chapter_title || ""}\n${ch.content}\n\n`).join("");
+    // Build excerpt from all chapter content
+    const excerpt = chapters.map(ch =>
+      `Chapter ${ch.chapter_number}: ${ch.chapter_title || ""}\n${ch.content}\n\n`
+    ).join("");
 
-    // Create a new book entry
+    // Fetch additional details from wip_books
+    const { results: wipBook } = await DB.prepare(`
+      SELECT subtitle, cover, wattpad
+      FROM wip_books
+      WHERE title = ?
+      LIMIT 1
+    `).bind(book_title).all();
+
+    if (wipBook.length === 0) {
+      return new Response("WIP book not found", { status: 404 });
+    }
+
+    const { subtitle, cover, wattpad } = wipBook[0];
+
+    // Insert into published books table
     const id = crypto.randomUUID();
     await DB.prepare(`
       INSERT INTO books (id, title, subtitle, excerpt, cover, wattpad)
       VALUES (?, ?, ?, ?, ?, ?)
-    `).bind(id, book_title, "", excerpt, "", "").run();
+    `).bind(id, book_title, subtitle, excerpt, cover, wattpad).run();
+
+    // Optional: Delete from wip_books
+    await DB.prepare(`
+      DELETE FROM wip_books WHERE title = ?
+    `).bind(book_title).run();
 
     return new Response("Book published successfully", { status: 200 });
+
   } catch (err) {
     console.error("Publish Book Error:", err);
     return new Response("Failed to publish book", { status: 500 });
