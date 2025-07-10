@@ -6,7 +6,10 @@ export async function onRequestPost(context) {
     const { id, title, subtitle, excerpt, cover, wattpad } = data;
 
     if (!id || !title) {
-      return new Response("Missing required fields", { status: 400 });
+      return new Response(JSON.stringify({ error: "Missing required fields" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     // Try updating published books first
@@ -25,13 +28,22 @@ export async function onRequestPost(context) {
       `).bind(title, subtitle, excerpt, cover, wattpad, id).run();
 
       if (wipResult.meta.changes === 0) {
-        return new Response("Book not found in any table", { status: 404 });
+        return new Response(JSON.stringify({ error: "Book not found in any table" }), {
+          status: 404,
+          headers: { "Content-Type": "application/json" },
+        });
       }
     }
 
-    return new Response("Book updated successfully", { status: 200 });
+    return new Response(JSON.stringify({ message: "Book updated successfully" }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
   } catch (err) {
     console.error("Update Book Error:", err);
-    return new Response("Failed to update book", { status: 500 });
+    return new Response(JSON.stringify({ error: "Failed to update book" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 }
