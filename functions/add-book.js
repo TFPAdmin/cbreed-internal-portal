@@ -6,7 +6,13 @@ export async function onRequestPost(context) {
     const { id, title, subtitle, excerpt, cover, wattpad } = data;
 
     if (!id || !title) {
-      return new Response("Missing required fields", { status: 400 });
+      return Response.json({ error: "Missing required fields" }, { status: 400 });
+    }
+
+    // Optional: Check if book already exists
+    const existing = await DB.prepare(`SELECT 1 FROM wip_books WHERE id = ?`).bind(id).first();
+    if (existing) {
+      return Response.json({ error: "Book with this ID already exists" }, { status: 409 });
     }
 
     await DB.prepare(`
@@ -14,9 +20,10 @@ export async function onRequestPost(context) {
       VALUES (?, ?, ?, ?, ?, ?)
     `).bind(id, title, subtitle, excerpt, cover, wattpad).run();
 
-    return new Response("Book added successfully", { status: 200 });
+    return Response.json({ message: "Book added successfully" }, { status: 200 });
+
   } catch (err) {
     console.error("Add Book Error:", err);
-    return new Response("Failed to add book", { status: 500 });
+    return Response.json({ error: "Failed to add book" }, { status: 500 });
   }
 }
