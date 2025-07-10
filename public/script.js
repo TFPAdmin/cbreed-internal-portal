@@ -1,14 +1,17 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const bookList = document.getElementById("books");
+  const wipList = document.getElementById("wip-books");
+  const publishedList = document.getElementById("published-books");
   const bookForm = document.getElementById("book-form");
 
-  // Load books on page load
   async function loadBooks() {
-    bookList.innerHTML = "<li>Loading books...</li>";
+    wipList.innerHTML = "<li>Loading WIP books...</li>";
+    publishedList.innerHTML = "<li>Loading published books...</li>";
+
     try {
-      const res = await fetch("/get-books"); // ✅ Corrected path
+      const res = await fetch("/api/get-books"); // ✅ Ensure this is correct for your setup
       const books = await res.json();
-      bookList.innerHTML = "";
+      wipList.innerHTML = "";
+      publishedList.innerHTML = "";
 
       books.forEach(book => {
         const li = document.createElement("li");
@@ -20,20 +23,28 @@ document.addEventListener("DOMContentLoaded", () => {
           <p><em>${book.subtitle || ""}</em></p>
           <p>${book.excerpt || ""}</p>
           <a href="${book.wattpad}" target="_blank">Read on Wattpad</a><br>
-          <button onclick="editBook('${book.id}')">✏️ Edit</button>
-          <button onclick="removeBook('${book.id}')">🗑️ Remove</button>
+          <button onclick="editBook('${book.id}', '${book.status}')">✏️ Edit</button>
+          <button onclick="removeBook('${book.id}', '${book.status}')">🗑️ Remove</button>
         `;
-        bookList.appendChild(li);
+
+        if (book.status === "wip") {
+          wipList.appendChild(li);
+        } else if (book.status === "published") {
+          publishedList.appendChild(li);
+        }
       });
     } catch (err) {
-      bookList.innerHTML = "<li>Error loading books</li>";
+      console.error("Load error:", err);
+      wipList.innerHTML = "<li>Error loading WIP books</li>";
+      publishedList.innerHTML = "<li>Error loading published books</li>";
     }
   }
 
-  // Add new book
   bookForm.addEventListener("submit", async e => {
     e.preventDefault();
     const formData = new FormData(bookForm);
+    const action = document.getElementById("action").value;
+
     const newBook = {
       id: crypto.randomUUID(),
       title: formData.get("title"),
@@ -43,26 +54,33 @@ document.addEventListener("DOMContentLoaded", () => {
       wattpad: formData.get("wattpad")
     };
 
-    await fetch("/api/add-book", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newBook)
-    });
+    if (action === "create") {
+      await fetch("/api/add-book", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newBook)
+      });
+    } else if (action === "move") {
+      await fetch("/api/publish-book", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ book_title: newBook.title })
+      });
+    }
 
     bookForm.reset();
     loadBooks();
   });
 
-  // Placeholder for edit
-  window.editBook = (id) => {
-    alert(`Edit feature for book ID ${id} coming soon.`);
+  window.editBook = (id, status) => {
+    alert(`Edit feature for book ID ${id} (${status}) coming soon.`);
   };
 
-  // Remove a book
-  window.removeBook = async (id) => {
+  window.removeBook = async (id, status) => {
     if (!confirm("Are you sure you want to delete this book?")) return;
 
-    await fetch(`/api/remove-book`, {
+    const api = status === "wip" ? "/api/remove-wip-book" : "/api/remove-book";
+    await fetch(api, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id })
