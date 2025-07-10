@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
     wipList.innerHTML = "<li>Loading WIP books...</li>";
     publishedList.innerHTML = "<li>Loading published books...</li>";
     try {
-      const res = await fetch("/api/get-books");
+      const res = await fetch("/get-books");
       const books = await res.json();
       wipList.innerHTML = "";
       publishedList.innerHTML = "";
