@@ -57,22 +57,6 @@
       max-height: 300px;
       overflow-y: auto;
     }
-
-    #book-controls {
-      text-align: center;
-      margin-bottom: 1rem;
-    }
-
-    #book-controls select {
-      margin: 0.25rem;
-    }
-
-    .button-group {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
   </style>
 </head>
 <body>
@@ -88,18 +72,13 @@
     <div class="workspace">
       <!-- Left Column: Writing -->
       <div class="half writer-column">
-        <section id="book-controls">
-          <label for="book-select">📚 Select Book:</label><br>
-          <select id="book-select"></select>
-        </section>
-
         <section>
           <h3>📖 Chapters</h3>
           <ul id="chapters"></ul>
         </section>
 
         <section id="working-on">
-          <strong>Working on:</strong> <span id="current-book">None Selected</span>
+          <strong>Working on:</strong> <span contenteditable="true" id="current-book">Untitled Book</span>
         </section>
 
         <section id="new-chapter">
@@ -111,9 +90,9 @@
           </form>
         </section>
 
-        <section class="button-group">
+        <section>
           <button id="publish-btn">📤 Publish Book to Shelf</button>
-          <button id="new-book-btn">➕ New Book</button>
+          <button id="create-book-btn">➕ Create New Book</button>
         </section>
       </div>
 
@@ -138,37 +117,15 @@
   </footer>
 
   <script>
-    const bookSelect = document.getElementById("book-select");
-    const currentBookLabel = document.getElementById("current-book");
     const chaptersList = document.getElementById("chapters");
     const chapterSelect = document.getElementById("chapter-select");
     const chapterViewer = document.getElementById("chapter-viewer");
+    const bookTitleField = document.getElementById("current-book");
+
     let allChapters = [];
 
-    async function fetchBooks() {
-      const res = await fetch("/api/get-books");
-      const books = await res.json();
-
-      bookSelect.innerHTML = "";
-      books.forEach(book => {
-        const option = document.createElement("option");
-        option.value = book.title;
-        option.textContent = book.title;
-        bookSelect.appendChild(option);
-      });
-
-      if (books.length > 0) {
-        bookSelect.value = books[0].title;
-        currentBookLabel.textContent = books[0].title;
-        loadChapters(books[0].title);
-      } else {
-        currentBookLabel.textContent = "None Selected";
-        chaptersList.innerHTML = "";
-        chapterSelect.innerHTML = '<option value="">Select a chapter</option>';
-      }
-    }
-
-    async function loadChapters(bookTitle) {
+    async function loadChapters() {
+      const bookTitle = bookTitleField.textContent.trim();
       const res = await fetch(`/api/get-chapters?book_title=${encodeURIComponent(bookTitle)}`);
       const data = await res.json();
       allChapters = data;
@@ -176,4 +133,112 @@
       chaptersList.innerHTML = "";
       chapterSelect.innerHTML = '<option value="">Select a chapter</option>';
 
-      da
+      data.forEach(ch => {
+        const li = document.createElement("li");
+        li.innerHTML = `<strong>${ch.chapter_title || "Untitled"}</strong><br>
+          <button onclick="editChapter('${ch.id}')">✏️ Edit</button>`;
+        chaptersList.appendChild(li);
+
+        const opt = document.createElement("option");
+        opt.value = ch.id;
+        opt.textContent = `${ch.chapter_title || "Untitled"}`;
+        chapterSelect.appendChild(opt);
+      });
+    }
+
+    document.getElementById("chapter-form").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const chapterTitle = document.getElementById("chapter-title").value;
+      const chapterContent = document.getElementById("chapter-content").value;
+      const bookTitle = bookTitleField.textContent.trim();
+
+      await fetch("/api/add-chapter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: crypto.randomUUID(),
+          book_title: bookTitle,
+          chapter_title: chapterTitle,
+          chapter_number: Date.now(),
+          content: chapterContent
+        })
+      });
+
+      document.getElementById("chapter-form").reset();
+      await loadChapters();
+    });
+
+    function editChapter(id) {
+      const chapter = allChapters.find(ch => ch.id === id);
+      if (chapter) {
+        document.getElementById("chapter-title").value = chapter.chapter_title;
+        document.getElementById("chapter-content").value = chapter.content;
+
+        document.getElementById("chapter-form").onsubmit = async function (e) {
+          e.preventDefault();
+          await fetch("/api/update-chapter", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              id,
+              chapter_number: chapter.chapter_number,
+              chapter_title: document.getElementById("chapter-title").value,
+              content: document.getElementById("chapter-content").value
+            })
+          });
+          document.getElementById("chapter-form").reset();
+          document.getElementById("chapter-form").onsubmit = null;
+          await loadChapters();
+        };
+      }
+    }
+
+    document.getElementById("publish-btn").addEventListener("click", async () => {
+      const confirm = window.confirm("Are you sure you want to publish this book?");
+      if (!confirm) return;
+
+      await fetch("/api/publish-book", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ book_title: bookTitleField.textContent.trim() })
+      });
+
+      alert("Book published to bookshelf!");
+    });
+
+    document.getElementById("create-book-btn").addEventListener("click", async () => {
+      const title = prompt("Enter new book title:");
+      if (!title) return;
+
+      const res = await fetch("/api/add-wip-book", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: crypto.randomUUID(),
+          title,
+          subtitle: "",
+          excerpt: "",
+          cover: "",
+          wattpad: ""
+        })
+      });
+
+      if (res.ok) {
+        bookTitleField.textContent = title;
+        await loadChapters();
+        alert("New book created!");
+      } else {
+        alert("Failed to create book.");
+      }
+    });
+
+    chapterSelect.addEventListener("change", () => {
+      const selectedId = chapterSelect.value;
+      const chapter = allChapters.find(ch => ch.id === selectedId);
+      chapterViewer.textContent = chapter ? chapter.content : "Select a chapter to read it here.";
+    });
+
+    loadChapters();
+  </script>
+</body>
+</html>
