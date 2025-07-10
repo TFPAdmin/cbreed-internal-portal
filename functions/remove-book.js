@@ -4,24 +4,41 @@ export async function onRequestPost(context) {
     const { id } = await context.request.json();
 
     if (!id) {
-      return new Response("Missing ID", { status: 400 });
+      return new Response(JSON.stringify({ error: "Missing ID" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
-    // Try deleting from the published books table
-    const bookResult = await DB.prepare(`DELETE FROM books WHERE id = ?`).bind(id).run();
+    // Try deleting from published books
+    const published = await DB.prepare(`DELETE FROM books WHERE id = ?`).bind(id).run();
 
-    // If not found there, try deleting from the WIP books table
-    if (bookResult.meta.changes === 0) {
-      const wipResult = await DB.prepare(`DELETE FROM wip_books WHERE id = ?`).bind(id).run();
-
-      if (wipResult.meta.changes === 0) {
-        return new Response("Book not found in any table", { status: 404 });
-      }
+    if (published.meta.changes > 0) {
+      return new Response(JSON.stringify({ message: "Book deleted from published" }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
-    return new Response("Book deleted", { status: 200 });
+    // Try deleting from WIP
+    const wip = await DB.prepare(`DELETE FROM wip_books WHERE id = ?`).bind(id).run();
+
+    if (wip.meta.changes > 0) {
+      return new Response(JSON.stringify({ message: "Book deleted from WIP" }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    return new Response(JSON.stringify({ error: "Book not found in any table" }), {
+      status: 404,
+      headers: { "Content-Type": "application/json" },
+    });
   } catch (err) {
     console.error("Delete Book Error:", err);
-    return new Response("Failed to delete book", { status: 500 });
+    return new Response(JSON.stringify({ error: "Failed to delete book" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 }
