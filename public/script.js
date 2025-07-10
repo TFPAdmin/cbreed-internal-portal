@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const res = await fetch("/get-books");
       const books = await res.json();
-      const book = books.find(b => b.id === id && b.status === status);
+      const book = books.find(b => b.id === id);
       if (!book) return alert("Book not found.");
 
       editingId = id;
