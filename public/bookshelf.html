@@ -1,47 +1,67 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Bookshelf Manager</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <script>
-    if (localStorage.getItem("authenticated") !== "true") {
-      window.location.href = "index.html";
+export async function onRequestPost(context) { 
+  try {
+    const DB = context.env.DB;
+    const data = await context.request.json();
+
+    const { id, title, subtitle, excerpt, cover, wattpad, action } = data;
+
+    if (!id || !title) {
+      return new Response("Missing required fields", { status: 400 });
     }
-  </script>
 
-  <div class="container">
-    <h1>Bookshelf Manager</h1>
+    if (action === "moveToPublished") {
+      // Move book from WIP to Published
+      const { results: wipData } = await DB.prepare(`
+        SELECT * FROM wip_books WHERE id = ?
+      `).bind(id).all();
 
-    <section id="book-list">
-      <h2>Current Books</h2>
-      <ul id="books"></ul>
-    </section>
+      if (!wipData || wipData.length === 0) {
+        return new Response("WIP book not found", { status: 404 });
+      }
 
-    <section id="add-book">
-      <h2>Add New Book</h2>
-      <form id="book-form">
-        <input type="text" name="title" placeholder="Title" required><br>
-        <input type="text" name="subtitle" placeholder="Subtitle"><br>
-        <textarea name="excerpt" placeholder="Excerpt"></textarea><br>
-        <input type="url" name="cover" placeholder="Cover Image URL"><br>
-        <input type="url" name="wattpad" placeholder="Wattpad Link"><br>
-        <button type="submit">Add Book</button>
-      </form>
-    </section>
-  </div>
+      const book = wipData[0];
+      const newId = crypto.randomUUID();
+      await DB.prepare(`
+        INSERT INTO books (id, title, subtitle, excerpt, cover, wattpad)
+        VALUES (?, ?, ?, ?, ?, ?)
+      `).bind(newId, book.title, book.subtitle, book.excerpt, book.cover, book.wattpad).run();
 
-  <script src="script.js"></script>
-  <footer class="site-map">
-  <a href="home.html">🏠 Home</a> |
-  <a href="bookshelf.html">📘 Bookshelf</a> |
-  <a href="writer.html">✍️ Writer</a> |
-  <a href="brainstorm.html">🧠 Brainstorm</a> |
-  <a href="settings.html">⚙️ Settings</a>
-</footer>
+      await DB.prepare(`DELETE FROM wip_books WHERE id = ?`).bind(id).run();
 
-</body>
-</html>
+      return new Response("Book moved to published", { status: 200 });
+    } else if (action === "createNew") {
+      // Add new book to WIP
+      await DB.prepare(`
+        INSERT INTO wip_books (id, title, subtitle, excerpt, cover, wattpad)
+        VALUES (?, ?, ?, ?, ?, ?)
+      `).bind(id, title, subtitle, excerpt, cover, wattpad).run();
+
+      return new Response("New WIP book created", { status: 200 });
+    } else {
+      // Try updating published books first
+      const result = await DB.prepare(`
+        UPDATE books
+        SET title = ?, subtitle = ?, excerpt = ?, cover = ?, wattpad = ?
+        WHERE id = ?
+      `).bind(title, subtitle, excerpt, cover, wattpad, id).run();
+
+      // If not found in books, try updating WIP
+      if (result.meta.changes === 0) {
+        const wipResult = await DB.prepare(`
+          UPDATE wip_books
+          SET title = ?, subtitle = ?, excerpt = ?, cover = ?, wattpad = ?
+          WHERE id = ?
+        `).bind(title, subtitle, excerpt, cover, wattpad, id).run();
+
+        if (wipResult.meta.changes === 0) {
+          return new Response("Book not found in any table", { status: 404 });
+        }
+      }
+
+      return new Response("Book updated successfully", { status: 200 });
+    }
+  } catch (err) {
+    console.error("Update Book Error:", err);
+    return new Response("Failed to update book", { status: 500 });
+  }
+}
