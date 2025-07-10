@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
     publishedList.innerHTML = "<li>Loading published books...</li>";
 
     try {
-      const res = await fetch("/api/get-books"); // ✅ Ensure this is correct for your setup
+      const res = await fetch("/get-books");
       const books = await res.json();
       wipList.innerHTML = "";
       publishedList.innerHTML = "";
