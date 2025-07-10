@@ -59,10 +59,19 @@
     }
 
     #book-controls {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
+      text-align: center;
       margin-bottom: 1rem;
+    }
+
+    #book-controls select {
+      margin: 0.25rem;
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
     }
   </style>
 </head>
@@ -76,15 +85,14 @@
   <div class="container">
     <h1>📝 Writer Workspace</h1>
 
-    <div id="book-controls">
-      <label for="book-select">📚 Select Book:</label>
-      <select id="book-select"></select>
-      <button id="new-book-btn">➕ Create New Book</button>
-    </div>
-
     <div class="workspace">
       <!-- Left Column: Writing -->
       <div class="half writer-column">
+        <section id="book-controls">
+          <label for="book-select">📚 Select Book:</label><br>
+          <select id="book-select"></select>
+        </section>
+
         <section>
           <h3>📖 Chapters</h3>
           <ul id="chapters"></ul>
@@ -103,8 +111,9 @@
           </form>
         </section>
 
-        <section>
+        <section class="button-group">
           <button id="publish-btn">📤 Publish Book to Shelf</button>
+          <button id="new-book-btn">➕ New Book</button>
         </section>
       </div>
 
@@ -167,87 +176,4 @@
       chaptersList.innerHTML = "";
       chapterSelect.innerHTML = '<option value="">Select a chapter</option>';
 
-      data.forEach(ch => {
-        const li = document.createElement("li");
-        li.innerHTML = `<strong>${ch.chapter_title || "Untitled"}</strong><br>
-          <button onclick="editChapter('${ch.id}')">✏️ Edit</button>`;
-        chaptersList.appendChild(li);
-
-        const opt = document.createElement("option");
-        opt.value = ch.id;
-        opt.textContent = ch.chapter_title || "Untitled";
-        chapterSelect.appendChild(opt);
-      });
-    }
-
-    document.getElementById("chapter-form").addEventListener("submit", async function (e) {
-      e.preventDefault();
-      const bookTitle = bookSelect.value;
-      const chapterTitle = document.getElementById("chapter-title").value;
-      const chapterContent = document.getElementById("chapter-content").value;
-
-      await fetch("/api/add-chapter", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id: crypto.randomUUID(),
-          book_title: bookTitle,
-          chapter_title: chapterTitle,
-          chapter_number: Date.now(),
-          content: chapterContent
-        })
-      });
-
-      document.getElementById("chapter-form").reset();
-      await loadChapters(bookTitle);
-    });
-
-    function editChapter(id) {
-      alert("Edit functionality coming soon for chapter ID: " + id);
-    }
-
-    chapterSelect.addEventListener("change", () => {
-      const selectedId = chapterSelect.value;
-      const chapter = allChapters.find(ch => ch.id === selectedId);
-      chapterViewer.textContent = chapter ? chapter.content : "Select a chapter to read it here.";
-    });
-
-    bookSelect.addEventListener("change", () => {
-      const selected = bookSelect.value;
-      currentBookLabel.textContent = selected;
-      loadChapters(selected);
-    });
-
-    document.getElementById("publish-btn").addEventListener("click", async () => {
-      const confirm = window.confirm("Are you sure you want to publish this book?");
-      if (!confirm) return;
-
-      await fetch("/api/publish-book", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ book_title: bookSelect.value })
-      });
-
-      alert("Book published to bookshelf!");
-    });
-
-    document.getElementById("new-book-btn").addEventListener("click", async () => {
-      const title = prompt("Enter the title of the new book:");
-      if (!title || !title.trim()) return;
-
-      await fetch("/api/add-book", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: crypto.randomUUID(), title })
-      });
-
-      await fetchBooks();
-      bookSelect.value = title;
-      currentBookLabel.textContent = title;
-      loadChapters(title);
-    });
-
-    fetchBooks();
-  </script>
-</body>
-</html>
+      da
