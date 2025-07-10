@@ -4,18 +4,21 @@ export async function onRequestPost(context) {
     const { id } = await context.request.json();
 
     if (!id) {
-      return new Response("Missing ID", { status: 400 });
+      return Response.json({ error: "Missing chapter ID" }, { status: 400 });
     }
 
-    await DB.prepare(`
+    const result = await DB.prepare(`
       DELETE FROM chapters
       WHERE id = ?
     `).bind(id).run();
 
-    return new Response("Chapter deleted", { status: 200 });
+    if (result.meta.changes === 0) {
+      return Response.json({ error: "Chapter not found" }, { status: 404 });
+    }
+
+    return Response.json({ message: "Chapter deleted successfully" }, { status: 200 });
   } catch (err) {
     console.error("Delete Chapter Error:", err);
-    return new Response("Failed to delete chapter", { status: 500 });
+    return Response.json({ error: "Failed to delete chapter" }, { status: 500 });
   }
 }
-
