@@ -57,6 +57,13 @@
       max-height: 300px;
       overflow-y: auto;
     }
+
+    #book-controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
   </style>
 </head>
 <body>
@@ -69,23 +76,22 @@
   <div class="container">
     <h1>📝 Writer Workspace</h1>
 
+    <div id="book-controls">
+      <label for="book-select">📚 Select Book:</label>
+      <select id="book-select"></select>
+      <button id="new-book-btn">➕ Create New Book</button>
+    </div>
+
     <div class="workspace">
       <!-- Left Column: Writing -->
       <div class="half writer-column">
-        <section>
-          <h3>📚 Select Book</h3>
-          <select id="book-select">
-            <option value="">-- Select a Book --</option>
-          </select>
-        </section>
-
         <section>
           <h3>📖 Chapters</h3>
           <ul id="chapters"></ul>
         </section>
 
         <section id="working-on">
-          <strong>Working on:</strong> <span id="current-book">No Book Selected</span>
+          <strong>Working on:</strong> <span id="current-book">None Selected</span>
         </section>
 
         <section id="new-chapter">
@@ -123,35 +129,43 @@
   </footer>
 
   <script>
+    const bookSelect = document.getElementById("book-select");
+    const currentBookLabel = document.getElementById("current-book");
     const chaptersList = document.getElementById("chapters");
     const chapterSelect = document.getElementById("chapter-select");
     const chapterViewer = document.getElementById("chapter-viewer");
-    const bookTitleField = document.getElementById("current-book");
-    const bookSelect = document.getElementById("book-select");
-
     let allChapters = [];
 
-    async function loadBooks() {
+    async function fetchBooks() {
       const res = await fetch("/api/get-books");
       const books = await res.json();
-      bookSelect.innerHTML = '<option value="">-- Select a Book --</option>';
+
+      bookSelect.innerHTML = "";
       books.forEach(book => {
-        const opt = document.createElement("option");
-        opt.value = book.title;
-        opt.textContent = book.title;
-        bookSelect.appendChild(opt);
+        const option = document.createElement("option");
+        option.value = book.title;
+        option.textContent = book.title;
+        bookSelect.appendChild(option);
       });
+
+      if (books.length > 0) {
+        bookSelect.value = books[0].title;
+        currentBookLabel.textContent = books[0].title;
+        loadChapters(books[0].title);
+      } else {
+        currentBookLabel.textContent = "None Selected";
+        chaptersList.innerHTML = "";
+        chapterSelect.innerHTML = '<option value="">Select a chapter</option>';
+      }
     }
 
     async function loadChapters(bookTitle) {
-      if (!bookTitle) return;
       const res = await fetch(`/api/get-chapters?book_title=${encodeURIComponent(bookTitle)}`);
       const data = await res.json();
       allChapters = data;
 
       chaptersList.innerHTML = "";
       chapterSelect.innerHTML = '<option value="">Select a chapter</option>';
-      bookTitleField.textContent = bookTitle;
 
       data.forEach(ch => {
         const li = document.createElement("li");
@@ -161,21 +175,16 @@
 
         const opt = document.createElement("option");
         opt.value = ch.id;
-        opt.textContent = ch.chapter_title || `Chapter ${ch.chapter_number}`;
+        opt.textContent = ch.chapter_title || "Untitled";
         chapterSelect.appendChild(opt);
       });
     }
 
-    bookSelect.addEventListener("change", () => {
-      const selectedBook = bookSelect.value;
-      loadChapters(selectedBook);
-    });
-
     document.getElementById("chapter-form").addEventListener("submit", async function (e) {
       e.preventDefault();
+      const bookTitle = bookSelect.value;
       const chapterTitle = document.getElementById("chapter-title").value;
       const chapterContent = document.getElementById("chapter-content").value;
-      const bookTitle = bookTitleField.textContent.trim();
 
       await fetch("/api/add-chapter", {
         method: "POST",
@@ -197,31 +206,48 @@
       alert("Edit functionality coming soon for chapter ID: " + id);
     }
 
+    chapterSelect.addEventListener("change", () => {
+      const selectedId = chapterSelect.value;
+      const chapter = allChapters.find(ch => ch.id === selectedId);
+      chapterViewer.textContent = chapter ? chapter.content : "Select a chapter to read it here.";
+    });
+
+    bookSelect.addEventListener("change", () => {
+      const selected = bookSelect.value;
+      currentBookLabel.textContent = selected;
+      loadChapters(selected);
+    });
+
     document.getElementById("publish-btn").addEventListener("click", async () => {
-      const bookTitle = bookTitleField.textContent.trim();
       const confirm = window.confirm("Are you sure you want to publish this book?");
       if (!confirm) return;
 
       await fetch("/api/publish-book", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ book_title: bookTitle })
+        body: JSON.stringify({ book_title: bookSelect.value })
       });
 
       alert("Book published to bookshelf!");
     });
 
-    chapterSelect.addEventListener("change", () => {
-      const selectedId = chapterSelect.value;
-      const chapter = allChapters.find(ch => ch.id === selectedId);
-      if (chapter) {
-        chapterViewer.textContent = chapter.content;
-      } else {
-        chapterViewer.textContent = "Select a chapter to read it here.";
-      }
+    document.getElementById("new-book-btn").addEventListener("click", async () => {
+      const title = prompt("Enter the title of the new book:");
+      if (!title || !title.trim()) return;
+
+      await fetch("/api/add-book", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: crypto.randomUUID(), title })
+      });
+
+      await fetchBooks();
+      bookSelect.value = title;
+      currentBookLabel.textContent = title;
+      loadChapters(title);
     });
 
-    loadBooks();
+    fetchBooks();
   </script>
 </body>
 </html>
