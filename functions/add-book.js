@@ -1,6 +1,6 @@
 export async function onRequestPost(context) {
   try {
-    const DB = context.env.DB; // Your bound D1 database
+    const DB = context.env.DB;
     const data = await context.request.json();
 
     const { id, title, subtitle, excerpt, cover, wattpad } = data;
@@ -10,7 +10,7 @@ export async function onRequestPost(context) {
     }
 
     await DB.prepare(`
-      INSERT INTO books (id, title, subtitle, excerpt, cover, wattpad)
+      INSERT INTO wip_books (id, title, subtitle, excerpt, cover, wattpad)
       VALUES (?, ?, ?, ?, ?, ?)
     `).bind(id, title, subtitle, excerpt, cover, wattpad).run();
 
