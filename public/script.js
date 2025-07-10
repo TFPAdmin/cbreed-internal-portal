@@ -40,7 +40,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Submit create or update
   bookForm.addEventListener("submit", async e => {
     e.preventDefault();
     const formData = new FormData(bookForm);
@@ -56,14 +55,14 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     if (editingId) {
-      // UPDATE existing
+      // UPDATE existing book
       await fetch("/api/update-book", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(bookData)
       });
     } else if (action === "create") {
-      // ADD new to wip_books
+      // ADD new to WIP
       await fetch("/api/add-book", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -77,29 +76,27 @@ document.addEventListener("DOMContentLoaded", () => {
     await loadBooks();
   });
 
-  // Edit a book
   window.editBook = async (id, status) => {
     try {
-      const res = await fetch("/api/get-books");
+      const res = await fetch("/get-books");
       const books = await res.json();
-      const book = books.find(b => b.id === id);
+      const book = books.find(b => b.id === id && b.status === status);
       if (!book) return alert("Book not found.");
 
-      editingId = id;
-      editingStatus = status;
+      editingId = book.id;
+      editingStatus = book.status;
 
-      bookForm.title.value = book.title;
-      bookForm.subtitle.value = book.subtitle || "";
-      bookForm.excerpt.value = book.excerpt || "";
-      bookForm.cover.value = book.cover || "";
-      bookForm.wattpad.value = book.wattpad || "";
+      bookForm.querySelector("input[name='title']").value = book.title;
+      bookForm.querySelector("input[name='subtitle']").value = book.subtitle || "";
+      bookForm.querySelector("textarea[name='excerpt']").value = book.excerpt || "";
+      bookForm.querySelector("input[name='cover']").value = book.cover || "";
+      bookForm.querySelector("input[name='wattpad']").value = book.wattpad || "";
     } catch (err) {
       console.error("Edit load error:", err);
       alert("Failed to load book for editing.");
     }
   };
 
-  // Delete a book
   window.removeBook = async (id, status) => {
     if (!confirm("Are you sure you want to delete this book?")) return;
 
@@ -109,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
       body: JSON.stringify({ id })
     });
 
-    loadBooks();
+    await loadBooks();
   };
 
   loadBooks();
