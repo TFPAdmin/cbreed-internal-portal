@@ -1,5 +1,3 @@
-// functions/get-books.js
-
 export async function onRequestGet(context) {
   try {
     const DB = context.env.DB;
@@ -11,7 +9,6 @@ export async function onRequestGet(context) {
       ORDER BY title ASC
     `).all();
 
-    // Normalize results (just in case)
     const normalizedResults = results.map(book => ({
       id: book.id,
       title: book.title,
@@ -19,12 +16,12 @@ export async function onRequestGet(context) {
       excerpt: book.excerpt || "",
       cover: book.cover || "",
       wattpad: book.wattpad || "",
-      status: book.status?.trim().toLowerCase() === "wip" ? "wip" : "published"
+      status: book.status?.toLowerCase() === "wip" ? "wip" : "published"
     }));
 
     return Response.json(normalizedResults);
   } catch (err) {
     console.error("Get Books Error:", err);
-    return new Response("Failed to fetch books", { status: 500 });
+    return Response.json({ error: "Failed to fetch books" }, { status: 500 });
   }
 }
