@@ -3,153 +3,78 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Settings - C.B.Reed Admin</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Settings - C.B.Reed Dashboard</title>
+  <link rel="stylesheet" href="style.css">
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 2rem;
-      background-color: #f0f0f0;
-      color: #333;
+    body.dark-mode {
+      background-color: #121212;
+      color: #f0f0f0;
     }
 
-    h1 {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-
-    .shelf-row {
-      display: flex;
-      gap: 2rem;
-      flex-wrap: wrap;
-    }
-
-    .book-shelf {
-      flex: 1;
-      min-width: 300px;
-      background: #fff;
-      padding: 1rem;
-      border-radius: 10px;
+    .settings-container {
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 1.5rem;
+      background: white;
+      border-radius: 8px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
 
-    .book-card {
-      background: #fafafa;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      padding: 0.5rem;
-      margin-bottom: 1rem;
+    body.dark-mode .settings-container {
+      background: #1e1e1e;
+      color: #f0f0f0;
     }
 
-    .book-card img {
-      max-width: 100%;
-      max-height: 150px;
+    label {
+      font-weight: bold;
       display: block;
-      margin-bottom: 0.5rem;
+      margin: 1rem 0 0.5rem;
     }
 
-    form {
-      margin-top: 2rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    input, textarea, select, button {
+    input[type="checkbox"], select {
+      margin-bottom: 1rem;
       padding: 0.5rem;
       font-size: 1rem;
-      border-radius: 5px;
-      border: 1px solid #ccc;
     }
 
     button {
-      background-color: #007bff;
-      color: white;
-      border: none;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      margin-top: 1rem;
       cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #0056b3;
-    }
-
-    footer.site-map {
-      margin-top: 2rem;
-      text-align: center;
-    }
-
-    footer.site-map a {
-      margin: 0 0.5rem;
-      text-decoration: none;
-    }
-
-    /* 🌙 Dark Mode Support */
-    @media (prefers-color-scheme: dark) {
-      body {
-        background-color: #121212;
-        color: #f0f0f0;
-      }
-
-      .book-shelf,
-      .book-card {
-        background-color: #1e1e1e;
-        border-color: #444;
-      }
-
-      input, textarea, select, button {
-        background-color: #2a2a2a;
-        color: #f0f0f0;
-        border-color: #555;
-      }
-
-      a {
-        color: #80bfff;
-      }
     }
   </style>
 </head>
 <body>
-  <script>
-    if (localStorage.getItem("authenticated") !== "true") {
-      window.location.href = "index.html";
-    }
-  </script>
+  <div class="settings-container">
+    <h1>⚙️ Settings</h1>
 
-  <h1>⚙️ Settings</h1>
+    <label>
+      <input type="checkbox" id="dark-mode-toggle"> Enable Dark Mode
+    </label>
 
-  <div class="shelf-row">
-    <div class="book-shelf">
-      <h2>📚 WIP Shelf</h2>
-      <ul id="wip-books"></ul>
-    </div>
+    <label for="font-select">Font Style:</label>
+    <select id="font-select">
+      <option value="Arial, sans-serif">Arial</option>
+      <option value="Georgia, serif">Georgia</option>
+      <option value="'Courier New', monospace">Courier New</option>
+      <option value="'Comic Sans MS', cursive">Comic Sans MS</option>
+    </select>
 
-    <div class="book-shelf">
-      <h2>📕 Published Shelf</h2>
-      <ul id="published-books"></ul>
-    </div>
+    <label for="font-size-select">Font Size:</label>
+    <select id="font-size-select">
+      <option value="14px">Small</option>
+      <option value="16px" selected>Medium</option>
+      <option value="18px">Large</option>
+      <option value="20px">Extra Large</option>
+    </select>
+
+    <hr>
+
+    <h2>📤 Export Data</h2>
+    <button onclick="exportData('chapters')">Export Chapters</button>
   </div>
 
-  <form id="book-form">
-    <select id="action">
-      <option value="create">Create New Book (WIP)</option>
-    </select>
-    <input type="text" name="title" placeholder="Title" required>
-    <input type="text" name="subtitle" placeholder="Subtitle">
-    <textarea name="excerpt" placeholder="Excerpt"></textarea>
-    <input type="url" name="cover" placeholder="Cover Image URL">
-    <input type="url" name="wattpad" placeholder="Wattpad Link">
-    <button type="submit">Submit</button>
-  </form>
-
-  <footer class="site-map">
-    <a href="home.html">🏠 Home</a> |
-    <a href="bookshelf.html">📘 Bookshelf</a> |
-    <a href="writer.html">✍️ Writer</a> |
-    <a href="brainstorm.html">🧠 Brainstorm</a> |
-    <a href="settings.html">⚙️ Settings</a>
-  </footer>
-
-  <script src="script.js"></script>
+  <script src="settings.js"></script>
 </body>
 </html>
