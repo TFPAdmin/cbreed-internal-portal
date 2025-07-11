@@ -6,18 +6,26 @@
   <title>Bookshelf Manager</title>
   <link rel="stylesheet" href="style.css">
   <style>
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+
     .shelf-row {
       display: flex;
       justify-content: space-between;
       flex-wrap: wrap;
       gap: 1rem;
     }
+
     .book-shelf {
       width: 48%;
       background: #f8f8f8;
       padding: 1rem;
       border-radius: 8px;
     }
+
     .book-card {
       background: white;
       border: 1px solid #ccc;
@@ -25,12 +33,14 @@
       margin: 0.5rem 0;
       border-radius: 6px;
     }
+
     form {
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
       margin-top: 1rem;
     }
+
     select, button, input, textarea {
       padding: 0.5rem;
       font-size: 1rem;
