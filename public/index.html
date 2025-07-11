@@ -5,6 +5,57 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Login - C.B.Reed Internal</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: sans-serif;
+      background-color: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .login-container {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+    }
+
+    .login-icon {
+      width: 64px;
+      margin-bottom: 1rem;
+    }
+
+    input[type="password"] {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+
+    button {
+      width: 100%;
+      padding: 0.75rem;
+      background-color: #003366;
+      color: white;
+      font-size: 1rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #005599;
+    }
+  </style>
 </head>
 <body>
   <div class="login-container">
@@ -12,7 +63,7 @@
     <h1>C.B.Reed Internal Use Only</h1>
 
     <form id="login-form">
-      <input type="password" id="password" placeholder="Enter password" required />
+      <input type="password" id="password" placeholder="Enter password" required autocomplete="current-password" />
       <button type="submit">Login</button>
     </form>
   </div>
@@ -22,17 +73,22 @@
       e.preventDefault();
       const entered = document.getElementById("password").value;
 
-      const res = await fetch("/api/verify-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password: entered })
-      });
+      try {
+        const res = await fetch("/api/verify-password", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password: entered })
+        });
 
-      if (res.ok) {
-        localStorage.setItem("authenticated", "true");  // ✅ this was missing!
-        window.location.href = "home.html";
-      } else {
-        alert("Incorrect password");
+        if (res.ok) {
+          localStorage.setItem("authenticated", "true");
+          window.location.href = "home.html";
+        } else {
+          alert("Incorrect password");
+        }
+      } catch (err) {
+        console.error("Login error:", err);
+        alert("Login failed. Please try again.");
       }
     });
   </script>
