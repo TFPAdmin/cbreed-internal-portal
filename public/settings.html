@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Settings - C.B.Reed Dashboard</title>
+  <title>Settings - C.B.Reed</title>
   <link rel="stylesheet" href="style.css">
   <style>
     body.dark-mode {
@@ -11,70 +11,72 @@
       color: #f0f0f0;
     }
 
-    .settings-container {
-      max-width: 600px;
-      margin: 2rem auto;
-      padding: 1.5rem;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-
-    body.dark-mode .settings-container {
-      background: #1e1e1e;
+    body.dark-mode select,
+    body.dark-mode input,
+    body.dark-mode button,
+    body.dark-mode label {
+      background-color: #1e1e1e;
       color: #f0f0f0;
+      border-color: #444;
     }
 
-    label {
-      font-weight: bold;
-      display: block;
-      margin: 1rem 0 0.5rem;
+    .settings-group {
+      margin-bottom: 2rem;
     }
 
-    input[type="checkbox"], select {
-      margin-bottom: 1rem;
-      padding: 0.5rem;
-      font-size: 1rem;
-    }
-
-    button {
-      padding: 0.5rem 1rem;
-      font-size: 1rem;
-      margin-top: 1rem;
-      cursor: pointer;
+    select, input[type="checkbox"], button {
+      margin-top: 0.5rem;
     }
   </style>
 </head>
 <body>
-  <div class="settings-container">
+  <script>
+    if (localStorage.getItem("authenticated") !== "true") {
+      window.location.href = "index.html";
+    }
+  </script>
+
+  <div class="container">
     <h1>⚙️ Settings</h1>
 
-    <label>
-      <input type="checkbox" id="dark-mode-toggle"> Enable Dark Mode
-    </label>
+    <section class="settings-group">
+      <h3>🌓 Theme</h3>
+      <label><input type="checkbox" id="dark-mode-toggle" /> Enable Dark Mode</label>
+    </section>
 
-    <label for="font-select">Font Style:</label>
-    <select id="font-select">
-      <option value="Arial, sans-serif">Arial</option>
-      <option value="Georgia, serif">Georgia</option>
-      <option value="'Courier New', monospace">Courier New</option>
-      <option value="'Comic Sans MS', cursive">Comic Sans MS</option>
-    </select>
+    <section class="settings-group">
+      <h3>🔤 Font Preferences</h3>
+      <label for="font-select">Font Style:</label>
+      <select id="font-select">
+        <option value="Georgia">Serif (Georgia)</option>
+        <option value="Arial">Sans-serif (Arial)</option>
+        <option value="Courier New">Monospace (Courier New)</option>
+      </select>
 
-    <label for="font-size-select">Font Size:</label>
-    <select id="font-size-select">
-      <option value="14px">Small</option>
-      <option value="16px" selected>Medium</option>
-      <option value="18px">Large</option>
-      <option value="20px">Extra Large</option>
-    </select>
+      <br><br>
+      <label for="font-size-select">Font Size:</label>
+      <select id="font-size-select">
+        <option value="14px">Small</option>
+        <option value="16px" selected>Medium</option>
+        <option value="18px">Large</option>
+      </select>
+    </section>
 
-    <hr>
-
-    <h2>📤 Export Data</h2>
-    <button onclick="exportData('chapters')">Export Chapters</button>
+    <section class="settings-group">
+      <h3>📦 Export Data</h3>
+      <button onclick="exportData('chapters')">Export Chapters</button>
+      <button onclick="exportData('brainstorm')">Export Brainstorm Notes</button>
+    </section>
   </div>
 
   <script src="settings.js"></script>
+
+  <footer class="site-map">
+    <a href="home.html">🏠 Home</a> |
+    <a href="bookshelf.html">📘 Bookshelf</a> |
+    <a href="writer.html">✍️ Writer</a> |
+    <a href="brainstorm.html">🧠 Brainstorm</a> |
+    <a href="settings.html">⚙️ Settings</a>
+  </footer>
 </body>
 </html>
