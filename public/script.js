@@ -4,14 +4,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const bookForm = document.getElementById("book-form");
 
   let editingId = null;
-  let editingStatus = null;
 
   async function loadBooks() {
     wipList.innerHTML = "<li>Loading WIP books...</li>";
     publishedList.innerHTML = "<li>Loading published books...</li>";
+
     try {
       const res = await fetch("/get-books");
       const books = await res.json();
+
       wipList.innerHTML = "";
       publishedList.innerHTML = "";
 
@@ -24,12 +25,13 @@ document.addEventListener("DOMContentLoaded", () => {
           <p><em>${book.subtitle || ""}</em></p>
           <p>${book.excerpt || ""}</p>
           <a href="${book.wattpad}" target="_blank">Read on Wattpad</a><br>
-          <button onclick="editBook('${book.id}', '${book.status}')">✏️ Edit</button>
-          <button onclick="removeBook('${book.id}', '${book.status}')">🗑️ Remove</button>
+          <button onclick="editBook('${book.id}')">✏️ Edit</button>
+          <button onclick="removeBook('${book.id}')">🗑️ Remove</button>
         `;
+
         if (book.status === "wip") {
           wipList.appendChild(li);
-        } else if (book.status === "published") {
+        } else {
           publishedList.appendChild(li);
         }
       });
@@ -40,8 +42,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  bookForm.addEventListener("submit", async e => {
+  bookForm.addEventListener("submit", async (e) => {
     e.preventDefault();
+
     const formData = new FormData(bookForm);
     const action = document.getElementById("action").value;
 
@@ -55,14 +58,14 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     if (editingId) {
-      // UPDATE existing book
+      // Update existing
       await fetch("/api/update-book", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(bookData)
       });
     } else if (action === "create") {
-      // ADD new to WIP
+      // Create new WIP book
       await fetch("/api/add-book", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -71,20 +74,20 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     editingId = null;
-    editingStatus = null;
     bookForm.reset();
     await loadBooks();
   });
 
-  window.editBook = async (id, status) => {
+  // Edit book by ID
+  window.editBook = async (id) => {
     try {
       const res = await fetch("/get-books");
       const books = await res.json();
-      const book = books.find(b => b.id === id && b.status === status);
+      const book = books.find(b => b.id === id);
+
       if (!book) return alert("Book not found.");
 
       editingId = book.id;
-      editingStatus = book.status;
 
       bookForm.querySelector("input[name='title']").value = book.title;
       bookForm.querySelector("input[name='subtitle']").value = book.subtitle || "";
@@ -97,7 +100,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  window.removeBook = async (id, status) => {
+  // Remove a book
+  window.removeBook = async (id) => {
     if (!confirm("Are you sure you want to delete this book?")) return;
 
     await fetch("/api/remove-book", {
