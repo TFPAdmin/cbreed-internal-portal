@@ -136,17 +136,19 @@
       document.getElementById("update-msg").textContent = res.ok ? "✅ Password updated!" : "❌ Failed to update.";
     });
 
-    document.getElementById("delete-user-form").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const res = await fetch("/delete-user", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username: document.getElementById("delete-username").value
-        })
-      });
-      document.getElementById("delete-msg").textContent = res.ok ? "✅ User deleted!" : "❌ Failed to delete.";
-    });
-  </script>
+   document.getElementById("delete-user-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const username = document.getElementById("delete-username").value;
+  const confirmDelete = confirm(`Are you sure you want to permanently delete user "${username}"?`);
+  if (!confirmDelete) return;
+
+  const res = await fetch("/delete-user", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username })
+  });
+
+  document.getElementById("delete-msg").textContent = res.ok ? "✅ User deleted!" : "❌ Failed to delete.";
+});  </script>
 </body>
 </html>
