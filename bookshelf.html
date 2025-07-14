@@ -57,6 +57,21 @@
     .book a:hover {
       text-decoration: underline;
     }
+
+    /* DARK MODE FOR .book CARDS */
+    body.dark-mode .book {
+      background: #1e1e1e;
+      color: #eee;
+      border: 1px solid #444;
+    }
+
+    body.dark-mode .book a {
+      color: #8ab4f8;
+    }
+
+    body.dark-mode .book a:hover {
+      color: #a4c9ff;
+    }
   </style>
 </head>
 <body>
@@ -84,12 +99,10 @@
         const books = await res.json();
         const grid = document.getElementById("books-grid");
         grid.innerHTML = "";
-
         if (books.length === 0) {
           grid.innerHTML = "<p>No books found.</p>";
           return;
         }
-
         books.forEach(book => {
           const div = document.createElement("div");
           div.className = "book";
@@ -106,14 +119,13 @@
         document.getElementById("books-grid").innerHTML = "<p>Failed to load books.</p>";
       }
     }
-
     loadBooks();
   </script>
+
   <script>
-  // Apply dark mode if enabled
-  if (localStorage.getItem("dark-mode") === "true") {
-    document.body.classList.add("dark-mode");
-  }
-</script>
+    if (localStorage.getItem("dark-mode") === "true") {
+      document.body.classList.add("dark-mode");
+    }
+  </script>
 </body>
 </html>
