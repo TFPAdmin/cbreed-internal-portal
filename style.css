@@ -36,6 +36,8 @@ select {
   font-size: 1rem;
   border: 1px solid #ccc;
   border-radius: 4px;
+  background: #fff;
+  color: #111;
 }
 
 textarea {
@@ -74,11 +76,12 @@ button:hover {
 .book-card a,
 .chapter-card a {
   word-break: break-word;
+  color: #1a73e8;
 }
 
-select {
-  appearance: none;
-  background: #fff;
+.book-card a:hover,
+.chapter-card a:hover {
+  text-decoration: underline;
 }
 
 /* Footer */
@@ -165,6 +168,7 @@ body.dark-mode a {
 
 body.dark-mode .box {
   background: #1e1e1e;
+  border: 1px solid #333;
 }
 
 /* Error and Success Messages */
@@ -207,4 +211,5 @@ body.dark-mode details summary {
 
 body.dark-mode details[open] {
   background: #1e1e1e;
+  border: 1px solid #444;
 }
