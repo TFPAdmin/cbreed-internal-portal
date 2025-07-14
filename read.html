@@ -15,7 +15,7 @@
     select {
       width: 100%;
       padding: 0.5rem;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1rem;
     }
 
     .chapter {
@@ -57,6 +57,9 @@
 
     <label for="book-select">Choose a book:</label>
     <select id="book-select"></select>
+
+    <label for="chapter-select">Choose a chapter:</label>
+    <select id="chapter-select"></select>
 
     <div id="chapters-container">
       <p>Select a book to begin reading.</p>
@@ -107,12 +110,24 @@
       currentChapters = chapters.sort((a, b) => a.chapter_number - b.chapter_number);
       currentChapterIndex = 0;
 
+      const chapterSelect = document.getElementById("chapter-select");
+      chapterSelect.innerHTML = "";
+
+      currentChapters.forEach((ch, i) => {
+        const option = document.createElement("option");
+        option.value = i;
+        option.textContent = `Chapter ${ch.chapter_number}: ${ch.chapter_title}`;
+        chapterSelect.appendChild(option);
+      });
+
       if (currentChapters.length > 0) {
         showChapter(currentChapterIndex);
         document.querySelector(".chapter-nav").style.display = "flex";
+        chapterSelect.style.display = "block";
       } else {
         document.getElementById("chapters-container").innerHTML = "<p>No chapters found for this book.</p>";
         document.querySelector(".chapter-nav").style.display = "none";
+        chapterSelect.style.display = "none";
       }
     }
 
@@ -126,6 +141,7 @@
         </div>
       `;
 
+      document.getElementById("chapter-select").value = index;
       document.getElementById("prev-btn").disabled = index === 0;
       document.getElementById("next-btn").disabled = index === currentChapters.length - 1;
     }
@@ -133,6 +149,14 @@
     document.getElementById("book-select").addEventListener("change", async (e) => {
       const selected = e.target.value;
       if (selected) await loadChapters(selected);
+    });
+
+    document.getElementById("chapter-select").addEventListener("change", (e) => {
+      const index = parseInt(e.target.value);
+      if (!isNaN(index)) {
+        currentChapterIndex = index;
+        showChapter(index);
+      }
     });
 
     document.getElementById("prev-btn").addEventListener("click", () => {
@@ -149,7 +173,6 @@
       }
     });
 
-    // Apply dark mode if enabled
     if (localStorage.getItem("dark-mode") === "true") {
       document.body.classList.add("dark-mode");
     }
