@@ -1,3 +1,4 @@
+<!-- settings.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,75 +12,37 @@
       margin: 3rem auto;
       padding: 1rem;
     }
-
-    details {
-      margin-bottom: 1.5rem;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      padding: 1rem;
-      background: #fff;
+    h2 {
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 0.5rem;
+      margin-top: 2rem;
     }
-
-    details summary {
-      font-weight: bold;
-      cursor: pointer;
-      margin: -1rem;
-      padding: 1rem;
-    }
-
     label {
       display: block;
-      margin-top: 1rem;
+      margin: 0.8rem 0 0.2rem;
     }
-
-    input {
+    input, select {
       width: 100%;
       padding: 8px;
-      margin-top: 5px;
+      margin-bottom: 1rem;
     }
-
     button {
-      margin-top: 10px;
-      padding: 10px 20px;
-      background: #333;
-      color: white;
-      border: none;
-      cursor: pointer;
+      display: inline-block;
+      margin-top: 0.5rem;
     }
-
-    button:hover {
-      background: #555;
-    }
-
     .message {
       margin-top: 0.5rem;
+      color: green;
+    }
+    details summary {
+      cursor: pointer;
       font-weight: bold;
+      margin-top: 1rem;
     }
-
-    /* Dark Mode */
-    body.dark-mode details {
-      background: #1e1e1e;
-      border-color: #444;
-      color: #eee;
-    }
-
-    body.dark-mode summary {
-      color: #fff;
-    }
-
-    body.dark-mode input {
-      background: #2a2a2a;
-      color: #eee;
-      border: 1px solid #444;
-    }
-
-    body.dark-mode button {
-      background: #444;
-      color: #fff;
-    }
-
-    body.dark-mode button:hover {
-      background: #666;
+    details[open] {
+      background: #f9f9f9;
+      padding: 1rem;
+      border-radius: 8px;
     }
   </style>
 </head>
@@ -98,9 +61,9 @@
     <details>
       <summary>➕ New User</summary>
       <form id="add-user-form">
-        <label>Username</label>
+        <label>New Username</label>
         <input type="text" id="new-username" required />
-        <label>Password</label>
+        <label>New Password</label>
         <input type="password" id="new-password" required />
         <button type="submit">Add User</button>
         <p id="add-user-msg" class="message"></p>
@@ -110,8 +73,8 @@
     <details>
       <summary>🔁 Reset Password</summary>
       <form id="update-password-form">
-        <label>Username</label>
-        <input type="text" id="update-username" required />
+        <label>Select User</label>
+        <select id="update-username" required></select>
         <label>New Password</label>
         <input type="password" id="update-password" required />
         <button type="submit">Update Password</button>
@@ -122,8 +85,8 @@
     <details>
       <summary>❌ Delete User</summary>
       <form id="delete-user-form">
-        <label>Username</label>
-        <input type="text" id="delete-username" required />
+        <label>Select User</label>
+        <select id="delete-username" required></select>
         <button type="submit">Delete User</button>
         <p id="delete-msg" class="message"></p>
       </form>
@@ -141,13 +104,14 @@
   </footer>
 
   <script>
-    // === DARK MODE ===
     const body = document.body;
     const toggle = document.getElementById("dark-toggle");
+
     if (localStorage.getItem("dark-mode") === "true") {
       body.classList.add("dark-mode");
       toggle.checked = true;
     }
+
     toggle.addEventListener("change", () => {
       if (toggle.checked) {
         body.classList.add("dark-mode");
@@ -158,7 +122,32 @@
       }
     });
 
-    // === USER MANAGEMENT ===
+    async function populateUserDropdowns() {
+      try {
+        const res = await fetch("/get-users");
+        const users = await res.json();
+
+        const updateSelect = document.getElementById("update-username");
+        const deleteSelect = document.getElementById("delete-username");
+
+        users.forEach(user => {
+          const option1 = document.createElement("option");
+          option1.value = user.key;
+          option1.textContent = user.key;
+          updateSelect.appendChild(option1);
+
+          const option2 = document.createElement("option");
+          option2.value = user.key;
+          option2.textContent = user.key;
+          deleteSelect.appendChild(option2);
+        });
+      } catch (err) {
+        console.error("Failed to load users:", err);
+      }
+    }
+
+    populateUserDropdowns();
+
     document.getElementById("add-user-form").addEventListener("submit", async (e) => {
       e.preventDefault();
       const res = await fetch("/add-user", {
