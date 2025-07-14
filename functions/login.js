@@ -21,7 +21,10 @@ export async function onRequest(context) {
     if (storedPassword === password) {
       return new Response(JSON.stringify({ success: true }), {
         status: 200,
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Set-Cookie": `auth_user=${username}; Path=/; HttpOnly; SameSite=Strict`,
+        },
       });
     } else {
       return new Response("Incorrect password", { status: 401 });
