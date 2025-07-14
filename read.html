@@ -135,12 +135,12 @@
       const chapter = currentChapters[index];
       const container = document.getElementById("chapters-container");
       container.innerHTML = `
-        <div class="chapter">
-          <h3>Chapter ${chapter.chapter_number}: ${chapter.chapter_title}</h3>
-          <p>${chapter.content}</p>
-        </div>
-      `;
-
+  <div class="chapter">
+    <h3>Chapter ${chapter.chapter_number}: ${chapter.chapter_title}</h3>
+    <p>${chapter.content}</p>
+    <button onclick="deleteCurrentChapter()">🗑 Delete This Chapter</button>
+  </div>
+`;
       document.getElementById("chapter-select").value = index;
       document.getElementById("prev-btn").disabled = index === 0;
       document.getElementById("next-btn").disabled = index === currentChapters.length - 1;
@@ -179,5 +179,27 @@
 
     loadBooks();
   </script>
+  <script>
+  async function deleteCurrentChapter() {
+    const chapter = currentChapters[currentChapterIndex];
+    if (!chapter || !chapter.id) return;
+
+    const confirmed = confirm(`Are you sure you want to delete Chapter ${chapter.chapter_number}: "${chapter.chapter_title}"?`);
+    if (!confirmed) return;
+
+    const res = await fetch("/delete-chapter", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: chapter.id })
+    });
+
+    if (res.ok) {
+      alert("Chapter deleted.");
+      await loadChapters(document.getElementById("book-select").value);
+    } else {
+      alert("Failed to delete chapter.");
+    }
+  }
+</script>
 </body>
 </html>
