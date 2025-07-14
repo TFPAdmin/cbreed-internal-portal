@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My Bookshelf</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/style.css" />
+  <style>
+    .container {
+      max-width: 800px;
+      margin: 3rem auto;
+      padding: 1rem;
+    }
+
+    .button-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .button-grid a {
+      display: inline-block;
+      background-color: #333;
+      color: white;
+      padding: 1rem;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: bold;
+    }
+
+    .button-grid a:hover {
+      background-color: #555;
+    }
+
+    .book-card {
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      padding: 1rem;
+    }
+
+    .book-card img {
+      max-width: 100px;
+      float: right;
+      margin-left: 1rem;
+    }
+
+    .book-card h3 {
+      margin: 0 0 0.5rem;
+    }
+
+    .book-card p {
+      margin: 0.2rem 0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Welcome to Your Bookshelf</h1>
+
+    <div class="button-grid">
+      <a href="/write.html">✍️ Write</a>
+      <a href="/read.html">📖 Read</a>
+      <a href="/bookshelf.html">📚 Bookshelf</a>
+      <a href="/settings.html">⚙️ Settings</a>
+    </div>
+
+    <h2>Current Books</h2>
+    <div id="book-list">
+      <p>Loading books...</p>
+    </div>
+  </div>
+
+  <footer>
+    <nav>
+      <a href="/index.html">Home</a> |
+      <a href="/write.html">Write</a> |
+      <a href="/read.html">Read</a> |
+      <a href="/bookshelf.html">Bookshelf</a> |
+      <a href="/settings.html">Settings</a>
+    </nav>
+  </footer>
+
+  <script>
+    async function loadBooks() {
+      try {
+        const res = await fetch("/get-books");
+        const books = await res.json();
+        const container = document.getElementById("book-list");
+        container.innerHTML = "";
+
+        if (books.length === 0) {
+          container.innerHTML = "<p>No books found.</p>";
+          return;
+        }
+
+        books.forEach(book => {
+          const div = document.createElement("div");
+          div.className = "book-card";
+          div.innerHTML = `
+            ${book.cover ? `<img src="${book.cover}" alt="${book.title}" onerror="this.style.display='none'">` : ""}
+            <h3>${book.title}</h3>
+            <p><em>${book.subtitle || ""}</em></p>
+            <p>${book.excerpt || ""}</p>
+            ${book.wattpad ? `<p><a href="${book.wattpad}" target="_blank">Read on Wattpad</a></p>` : ""}
+          `;
+          container.appendChild(div);
+        });
+      } catch (err) {
+        document.getElementById("book-list").innerHTML = "<p>Failed to load books.</p>";
+      }
+    }
+
+    loadBooks();
+  </script>
+</body>
+</html>
