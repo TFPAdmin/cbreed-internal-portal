@@ -19,25 +19,23 @@
     <p id="error" style="color:red;"></p>
   </div>
 
-<script>
-  async function login() {
-    const username = document.getElementById("username").value;
-    const password = document.getElementById("password").value;
-    const res = await fetch("/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password })
-    });
+  <script>
+    async function login() {
+      const res = await fetch("/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: document.getElementById("username").value,
+          password: document.getElementById("password").value
+        })
+      });
 
-    if (res.ok) {
-      // Check for ?redirect=... in URL
-      const params = new URLSearchParams(window.location.search);
-      const redirectTo = params.get("redirect") || "/";
-      window.location.href = redirectTo;
-    } else {
-      document.getElementById("error").innerText = "Login failed.";
+      if (res.ok) {
+        window.location.href = "/admin/index.html";
+      } else {
+        document.getElementById("error").innerText = "Login failed.";
+      }
     }
-  }
-</script>
+  </script>
 </body>
 </html>
