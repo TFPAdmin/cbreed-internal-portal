@@ -1,28 +1,19 @@
 export async function onRequest(context) {
-  const { request, next } = context;
+  const { request } = context;
   const url = new URL(request.url);
   const path = url.pathname;
   const cookie = request.headers.get("Cookie") || "";
 
-  const allowPaths = [
-    "/admin/login.html",
-    "/admin/login",
-    "/login",
-    "/favicon.ico",
-    "/admin/",       // for when someone visits /admin/
-    "/admin"         // for when someone visits /admin with no slash
-  ];
-
-  // ✅ Allow login-related paths
-  if (allowPaths.includes(path)) {
-    return await next();
+  // Always allow access to login endpoint and page
+  if (path === "/admin/login.html" || path === "/login") {
+    return await context.next();
   }
 
-  // ✅ Allow if cookie is valid
+  // If authenticated, allow access
   if (cookie.includes("auth=1")) {
-    return await next();
+    return await context.next();
   }
 
-  // ❌ Otherwise redirect to login
-  return Response.redirect(`${url.origin}/admin/login.html`, 302);
+  // Redirect to login and pass original path as ?redirect=
+  return Response.redirect(`${url.origin}/admin/login.html?redirect=${encodeURIComponent(path)}`, 302);
 }
