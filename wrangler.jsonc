@@ -1,0 +1,15 @@
+// wrangler.jsonc
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "book-shelf-admin",
+  "compatibility_date": "2025-07-01",
+  "pages_build_output_dir": "./", // root is fine if using /admin + /functions
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_id": "f0159cd3-fe12-4178-95f2-5b77165b93e8",
+      "database_name": "book-shelf"
+    }
+  ],
+  "compatibility_flags": ["nodejs_compat"]
+}
