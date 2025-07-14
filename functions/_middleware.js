@@ -4,8 +4,11 @@ export async function onRequest(context) {
   const path = url.pathname;
   const cookie = request.headers.get("Cookie") || "";
 
-  // Always allow access to login endpoint and page
-  if (path === "/admin/login.html" || path === "/login") {
+  // Always allow login routes
+  if (
+    path === "/admin/login.html" ||
+    path === "/login"
+  ) {
     return await context.next();
   }
 
@@ -14,6 +17,14 @@ export async function onRequest(context) {
     return await context.next();
   }
 
-  // Redirect to login and pass original path as ?redirect=
-  return Response.redirect(`${url.origin}/admin/login.html?redirect=${encodeURIComponent(path)}`, 302);
+  // Prevent redirect loop: if already on login, don't redirect again
+  if (path === "/admin/login.html") {
+    return await context.next();
+  }
+
+  // Redirect to login and include intended path
+  return Response.redirect(
+    `${url.origin}/admin/login.html?redirect=${encodeURIComponent(path)}`,
+    302
+  );
 }
