@@ -107,5 +107,11 @@
     document.body.classList.add("dark-mode");
   }
 </script>
+  <script>
+  // Apply dark mode if enabled
+  if (localStorage.getItem("dark-mode") === "true") {
+    document.body.classList.add("dark-mode");
+  }
+</script>
 </body>
 </html>
