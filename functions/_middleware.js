@@ -4,19 +4,19 @@ export async function onRequest(context) {
   const path = url.pathname;
   const cookie = request.headers.get("Cookie") || "";
 
-  // ✅ Allow access to login page and auth route
+  // Allow access to login and auth route
   if (
-    path.startsWith("/admin/login.html") ||
-    path.startsWith("/login")
+    path === "/admin/login.html" ||
+    path === "/login"
   ) {
     return await context.next();
   }
 
-  // ✅ Check cookie
+  // Allow only if auth cookie is present
   if (cookie.includes("auth=1")) {
     return await context.next();
   }
 
-  // ❌ Not authenticated → redirect to login
+  // Redirect to login
   return Response.redirect(`${url.origin}/admin/login.html`, 302);
 }
