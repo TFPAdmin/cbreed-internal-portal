@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Settings</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/style.css" />
+  <style>
+    .container {
+      max-width: 700px;
+      margin: 3rem auto;
+      padding: 1rem;
+    }
+
+    h2 {
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 0.5rem;
+      margin-top: 2rem;
+    }
+
+    label {
+      display: block;
+      margin: 0.8rem 0 0.2rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 1rem;
+    }
+
+    button {
+      display: inline-block;
+      margin-top: 0.5rem;
+    }
+
+    .message {
+      margin-top: 0.5rem;
+      color: green;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>⚙️ Settings</h1>
+
+    <h2>Appearance</h2>
+    <label>
+      <input type="checkbox" id="dark-toggle" />
+      Enable Dark Mode
+    </label>
+
+    <h2>User Management</h2>
+
+    <form id="add-user-form">
+      <label>New Username</label>
+      <input type="text" id="new-username" required />
+      <label>New Password</label>
+      <input type="password" id="new-password" required />
+      <button type="submit">Add User</button>
+      <p id="add-user-msg" class="message"></p>
+    </form>
+
+    <form id="update-password-form">
+      <label>Username</label>
+      <input type="text" id="update-username" required />
+      <label>New Password</label>
+      <input type="password" id="update-password" required />
+      <button type="submit">Update Password</button>
+      <p id="update-msg" class="message"></p>
+    </form>
+
+    <form id="delete-user-form">
+      <label>Username to Delete</label>
+      <input type="text" id="delete-username" required />
+      <button type="submit">Delete User</button>
+      <p id="delete-msg" class="message"></p>
+    </form>
+  </div>
+
+  <footer>
+    <nav>
+      <a href="/index.html">Home</a> |
+      <a href="/write.html">Write</a> |
+      <a href="/read.html">Read</a> |
+      <a href="/bookshelf.html">Bookshelf</a> |
+      <a href="/settings.html">Settings</a>
+    </nav>
+  </footer>
+
+  <script>
+    // === DARK MODE ===
+    const body = document.body;
+    const toggle = document.getElementById("dark-toggle");
+
+    // Initialize dark mode from localStorage
+    if (localStorage.getItem("dark-mode") === "true") {
+      body.classList.add("dark-mode");
+      toggle.checked = true;
+    }
+
+    toggle.addEventListener("change", () => {
+      if (toggle.checked) {
+        body.classList.add("dark-mode");
+        localStorage.setItem("dark-mode", "true");
+      } else {
+        body.classList.remove("dark-mode");
+        localStorage.setItem("dark-mode", "false");
+      }
+    });
+
+    // === USER MANAGEMENT ===
+    document.getElementById("add-user-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const res = await fetch("/add-user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: document.getElementById("new-username").value,
+          password: document.getElementById("new-password").value
+        })
+      });
+      document.getElementById("add-user-msg").textContent = res.ok ? "✅ User added!" : "❌ Failed to add user.";
+    });
+
+    document.getElementById("update-password-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const res = await fetch("/update-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: document.getElementById("update-username").value,
+          password: document.getElementById("update-password").value
+        })
+      });
+      document.getElementById("update-msg").textContent = res.ok ? "✅ Password updated!" : "❌ Failed to update.";
+    });
+
+    document.getElementById("delete-user-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const res = await fetch("/delete-user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: document.getElementById("delete-username").value
+        })
+      });
+      document.getElementById("delete-msg").textContent = res.ok ? "✅ User deleted!" : "❌ Failed to delete.";
+    });
+  </script>
+</body>
+</html>
