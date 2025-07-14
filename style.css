@@ -63,3 +63,24 @@ body.dark-mode footer {
 body.dark-mode a {
   color: #80d0ff;
 }
+/* --- Book / Chapter / Card Styles --- */
+.book-card,
+.chapter-card,
+.book {
+  background-color: #ffffff; /* Light mode solid */
+  color: #222;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 1rem;
+  margin: 1rem 0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Dark mode adjustments */
+.dark-mode .book-card,
+.dark-mode .chapter-card,
+.dark-mode .book {
+  background-color: #1e1e1e; /* Solid dark card */
+  color: #f0f0f0;
+  border: 1px solid #444;
+}
