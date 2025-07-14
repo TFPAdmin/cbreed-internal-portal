@@ -106,7 +106,7 @@
         <p><strong>Subtitle:</strong> ${book.subtitle || "—"}</p>
         <p><strong>Excerpt:</strong> ${book.excerpt || "—"}</p>
         <p><a href="${book.cover}" target="_blank">Cover</a> | <a href="${book.wattpad}" target="_blank">Wattpad</a></p>
-        <button onclick="deleteBook(${book.id})">Delete Book</button>
+        <button onclick="deleteBook(${book.id}, '${book.title}')">Delete Book</button>
         <button onclick="loadChapters('${book.title}')">Load Chapters</button>
       `;
       list.appendChild(div);
@@ -137,12 +137,16 @@
     loadBooks();
   }
 
-  async function deleteBook(id) {
+  async function deleteBook(id, title) {
+    const confirmDelete = confirm(`Are you sure you want to delete the book "${title}"? This action cannot be undone.`);
+    if (!confirmDelete) return;
+
     await fetch("/delete-book", {
       method: "POST",
       headers: {"Content-Type": "application/json"},
       body: JSON.stringify({ id })
     });
+
     loadBooks();
   }
 
@@ -159,7 +163,7 @@
       div.innerHTML = `
         <strong>Chapter ${ch.chapter_number}: ${ch.chapter_title}</strong>
         <p>${ch.content}</p>
-        <button onclick="deleteChapter(${ch.id}, '${bookTitle}')">Delete Chapter</button>
+        <button onclick="deleteChapter(${ch.id}, '${bookTitle}', '${ch.chapter_title}')">Delete Chapter</button>
       `;
       list.appendChild(div);
     });
@@ -182,7 +186,10 @@
     loadChapters(data.book_title);
   }
 
-  async function deleteChapter(id, bookTitle) {
+  async function deleteChapter(id, bookTitle, chapterTitle) {
+    const confirmDelete = confirm(`Are you sure you want to delete "${chapterTitle}" from "${bookTitle}"?`);
+    if (!confirmDelete) return;
+
     await fetch("/delete-chapter", {
       method: "POST",
       headers: {"Content-Type": "application/json"},
