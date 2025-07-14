@@ -19,15 +19,35 @@
     }
 
     .chapter {
-      margin-bottom: 2rem;
-      background: white;
-      padding: 1rem;
+      background-color: #ffffff;
+      color: #222;
+      border: 1px solid #ccc;
       border-radius: 8px;
-      box-shadow: 0 0 4px rgba(0,0,0,0.1);
+      padding: 1rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
     }
 
-    .chapter h3 {
-      margin-top: 0;
+    .dark-mode .chapter {
+      background-color: #1e1e1e;
+      color: #f0f0f0;
+      border: 1px solid #444;
+    }
+
+    .chapter-nav {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .chapter-nav button {
+      padding: 10px 16px;
+      font-size: 1rem;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
   </style>
 </head>
@@ -40,6 +60,11 @@
 
     <div id="chapters-container">
       <p>Select a book to begin reading.</p>
+    </div>
+
+    <div class="chapter-nav" style="display: none;">
+      <button id="prev-btn">⬅ Previous Chapter</button>
+      <button id="next-btn">Next Chapter ➡</button>
     </div>
   </div>
 
@@ -54,10 +79,14 @@
   </footer>
 
   <script>
+    let currentChapters = [];
+    let currentChapterIndex = 0;
+
     async function loadBooks() {
       const res = await fetch("/get-books");
       const books = await res.json();
       const select = document.getElementById("book-select");
+
       books.forEach(book => {
         const option = document.createElement("option");
         option.value = book.title;
@@ -65,53 +94,67 @@
         select.appendChild(option);
       });
 
-      // Load chapters when first book is selected
       if (books.length > 0) {
         select.value = books[0].title;
-        loadChapters(books[0].title);
+        await loadChapters(books[0].title);
       }
     }
 
     async function loadChapters(bookTitle) {
       const res = await fetch(`/get-chapters?book_title=${encodeURIComponent(bookTitle)}`);
       const chapters = await res.json();
-      const container = document.getElementById("chapters-container");
-      container.innerHTML = "";
 
-      if (chapters.length === 0) {
-        container.innerHTML = "<p>No chapters found for this book.</p>";
-        return;
+      currentChapters = chapters.sort((a, b) => a.chapter_number - b.chapter_number);
+      currentChapterIndex = 0;
+
+      if (currentChapters.length > 0) {
+        showChapter(currentChapterIndex);
+        document.querySelector(".chapter-nav").style.display = "flex";
+      } else {
+        document.getElementById("chapters-container").innerHTML = "<p>No chapters found for this book.</p>";
+        document.querySelector(".chapter-nav").style.display = "none";
       }
-
-      chapters.forEach(ch => {
-        const div = document.createElement("div");
-        div.className = "chapter";
-        div.innerHTML = `
-          <h3>Chapter ${ch.chapter_number}: ${ch.chapter_title}</h3>
-          <p>${ch.content}</p>
-        `;
-        container.appendChild(div);
-      });
     }
 
-    document.getElementById("book-select").addEventListener("change", (e) => {
+    function showChapter(index) {
+      const chapter = currentChapters[index];
+      const container = document.getElementById("chapters-container");
+      container.innerHTML = `
+        <div class="chapter">
+          <h3>Chapter ${chapter.chapter_number}: ${chapter.chapter_title}</h3>
+          <p>${chapter.content}</p>
+        </div>
+      `;
+
+      document.getElementById("prev-btn").disabled = index === 0;
+      document.getElementById("next-btn").disabled = index === currentChapters.length - 1;
+    }
+
+    document.getElementById("book-select").addEventListener("change", async (e) => {
       const selected = e.target.value;
-      if (selected) loadChapters(selected);
+      if (selected) await loadChapters(selected);
     });
+
+    document.getElementById("prev-btn").addEventListener("click", () => {
+      if (currentChapterIndex > 0) {
+        currentChapterIndex--;
+        showChapter(currentChapterIndex);
+      }
+    });
+
+    document.getElementById("next-btn").addEventListener("click", () => {
+      if (currentChapterIndex < currentChapters.length - 1) {
+        currentChapterIndex++;
+        showChapter(currentChapterIndex);
+      }
+    });
+
+    // Apply dark mode if enabled
+    if (localStorage.getItem("dark-mode") === "true") {
+      document.body.classList.add("dark-mode");
+    }
 
     loadBooks();
   </script>
-  <script>
-  // Apply dark mode if enabled
-  if (localStorage.getItem("dark-mode") === "true") {
-    document.body.classList.add("dark-mode");
-  }
-</script>
-  <script>
-  // Apply dark mode if enabled
-  if (localStorage.getItem("dark-mode") === "true") {
-    document.body.classList.add("dark-mode");
-  }
-</script>
 </body>
 </html>
