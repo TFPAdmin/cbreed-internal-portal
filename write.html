@@ -10,6 +10,9 @@
       max-width: 700px;
       margin: 3rem auto;
       padding: 1rem;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
     }
 
     form {
@@ -18,13 +21,62 @@
       gap: 1rem;
     }
 
+    input, textarea, select, button {
+      font-size: 1rem;
+      padding: 0.75rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+      width: 100%;
+    }
+
     textarea {
       height: 200px;
+      resize: vertical;
+    }
+
+    button {
+      background-color: #333;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #555;
     }
 
     .success {
       color: green;
       text-align: center;
+    }
+
+    /* Dark Mode Enhancements */
+    body.dark-mode {
+      background-color: #121212;
+      color: #eee;
+    }
+
+    body.dark-mode .container {
+      background: #1e1e1e;
+      color: #eee;
+      box-shadow: 0 0 6px rgba(255, 255, 255, 0.1);
+    }
+
+    body.dark-mode input,
+    body.dark-mode textarea,
+    body.dark-mode select {
+      background: #2a2a2a;
+      color: #eee;
+      border: 1px solid #444;
+    }
+
+    body.dark-mode button {
+      background-color: #444;
+      color: #fff;
+    }
+
+    body.dark-mode button:hover {
+      background-color: #666;
     }
   </style>
 </head>
@@ -113,6 +165,13 @@
     });
 
     loadBooks();
+  </script>
+
+  <script>
+    // Apply dark mode from localStorage if enabled
+    if (localStorage.getItem("dark-mode") === "true") {
+      document.body.classList.add("dark-mode");
+    }
   </script>
 </body>
 </html>
