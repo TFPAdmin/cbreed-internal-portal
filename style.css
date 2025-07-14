@@ -26,7 +26,9 @@ h1, h2, h3 {
 }
 
 /* Forms */
-input, textarea, select {
+input,
+textarea,
+select {
   width: 100%;
   padding: 0.75rem;
   margin-top: 0.5rem;
@@ -60,12 +62,13 @@ button:hover {
 
 /* Book/Chapter Cards */
 .book-card,
-.chapter-card {
+.chapter-card,
+.card {
   background: white;
   padding: 1rem;
   border-radius: 6px;
   margin-bottom: 1rem;
-  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
 .book-card a,
@@ -136,13 +139,18 @@ body.dark-mode select {
 }
 
 body.dark-mode .book-card,
-body.dark-mode .chapter-card {
+body.dark-mode .chapter-card,
+body.dark-mode .card {
   background: #1e1e1e;
   border: 1px solid #444;
 }
 
 body.dark-mode footer {
   background: #000;
+}
+
+body.dark-mode a {
+  color: #9cf;
 }
 
 /* Login Page Box */
@@ -155,10 +163,48 @@ body.dark-mode footer {
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Error Message Style */
-.error-text {
+body.dark-mode .box {
+  background: #1e1e1e;
+}
+
+/* Error and Success Messages */
+.error-text,
+.error-message {
   margin-top: 1rem;
   color: red;
   font-weight: bold;
   text-align: center;
+}
+
+.message {
+  font-weight: bold;
+  margin-top: 0.5rem;
+  color: green;
+}
+
+body.dark-mode .message {
+  color: lightgreen;
+}
+
+/* <details> and <summary> Styles */
+details summary {
+  cursor: pointer;
+  font-weight: bold;
+  padding: 0.5rem 0;
+  margin-top: 1rem;
+  color: #333;
+}
+
+details[open] {
+  background: #f9f9f9;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+body.dark-mode details summary {
+  color: #ccc;
+}
+
+body.dark-mode details[open] {
+  background: #1e1e1e;
 }
