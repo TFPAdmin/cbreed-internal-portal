@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Read Chapters</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/style.css" />
+  <style>
+    .container {
+      max-width: 800px;
+      margin: 3rem auto;
+      padding: 1rem;
+    }
+
+    select {
+      width: 100%;
+      padding: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .chapter {
+      margin-bottom: 2rem;
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 0 4px rgba(0,0,0,0.1);
+    }
+
+    .chapter h3 {
+      margin-top: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📖 Read Chapters</h1>
+
+    <label for="book-select">Choose a book:</label>
+    <select id="book-select"></select>
+
+    <div id="chapters-container">
+      <p>Select a book to begin reading.</p>
+    </div>
+  </div>
+
+  <footer>
+    <nav>
+      <a href="/index.html">Home</a> |
+      <a href="/write.html">Write</a> |
+      <a href="/read.html">Read</a> |
+      <a href="/bookshelf.html">Bookshelf</a> |
+      <a href="/settings.html">Settings</a>
+    </nav>
+  </footer>
+
+  <script>
+    async function loadBooks() {
+      const res = await fetch("/get-books");
+      const books = await res.json();
+      const select = document.getElementById("book-select");
+      books.forEach(book => {
+        const option = document.createElement("option");
+        option.value = book.title;
+        option.textContent = book.title;
+        select.appendChild(option);
+      });
+
+      // Load chapters when first book is selected
+      if (books.length > 0) {
+        select.value = books[0].title;
+        loadChapters(books[0].title);
+      }
+    }
+
+    async function loadChapters(bookTitle) {
+      const res = await fetch(`/get-chapters?book_title=${encodeURIComponent(bookTitle)}`);
+      const chapters = await res.json();
+      const container = document.getElementById("chapters-container");
+      container.innerHTML = "";
+
+      if (chapters.length === 0) {
+        container.innerHTML = "<p>No chapters found for this book.</p>";
+        return;
+      }
+
+      chapters.forEach(ch => {
+        const div = document.createElement("div");
+        div.className = "chapter";
+        div.innerHTML = `
+          <h3>Chapter ${ch.chapter_number}: ${ch.chapter_title}</h3>
+          <p>${ch.content}</p>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    document.getElementById("book-select").addEventListener("change", (e) => {
+      const selected = e.target.value;
+      if (selected) loadChapters(selected);
+    });
+
+    loadBooks();
+  </script>
+</body>
+</html>
