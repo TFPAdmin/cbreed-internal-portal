@@ -1,43 +1,80 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
   <title>Admin Login</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    body { font-family: Arial; background: #f5f5f5; padding: 2rem; }
-    .box { max-width: 400px; margin: auto; background: white; padding: 2rem; border-radius: 8px; }
-    input { width: 100%; margin-top: 10px; padding: 10px; }
-    button { margin-top: 15px; padding: 10px 20px; width: 100%; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      padding: 2rem;
+    }
+
+    .box {
+      max-width: 400px;
+      margin: auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      margin-bottom: 1rem;
+    }
+
+    input {
+      width: 100%;
+      margin-top: 10px;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      width: 100%;
+      background-color: #333;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    #error {
+      margin-top: 10px;
+      color: red;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
   <div class="box">
-    <h2>Login</h2>
+    <h2>Admin Login</h2>
     <input id="username" placeholder="Username" />
     <input id="password" type="password" placeholder="Password" />
     <button onclick="login()">Login</button>
-    <p id="error" style="color:red;"></p>
+    <p id="error"></p>
   </div>
 
-<script>
-  async function login() {
-    const username = document.getElementById("username").value;
-    const password = document.getElementById("password").value;
-    const res = await fetch("/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password })
-    });
+  <script>
+    async function login() {
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+      const res = await fetch("/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+      });
 
-    if (res.ok) {
-      // Check for ?redirect=... in URL
-      const params = new URLSearchParams(window.location.search);
-      const redirectTo = params.get("redirect") || "/";
-      window.location.href = redirectTo;
-    } else {
-      document.getElementById("error").innerText = "Login failed.";
+      if (res.ok) {
+        const params = new URLSearchParams(window.location.search);
+        const redirectTo = params.get("redirect") || "/";
+        window.location.href = redirectTo;
+      } else {
+        document.getElementById("error").innerText = "Login failed.";
+      }
     }
-  }
-</script>
+  </script>
 </body>
 </html>
