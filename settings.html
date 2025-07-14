@@ -12,31 +12,74 @@
       padding: 1rem;
     }
 
-    h2 {
-      border-bottom: 1px solid #ccc;
-      padding-bottom: 0.5rem;
-      margin-top: 2rem;
+    details {
+      margin-bottom: 1.5rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 1rem;
+      background: #fff;
+    }
+
+    details summary {
+      font-weight: bold;
+      cursor: pointer;
+      margin: -1rem;
+      padding: 1rem;
     }
 
     label {
       display: block;
-      margin: 0.8rem 0 0.2rem;
+      margin-top: 1rem;
     }
 
     input {
       width: 100%;
       padding: 8px;
-      margin-bottom: 1rem;
+      margin-top: 5px;
     }
 
     button {
-      display: inline-block;
-      margin-top: 0.5rem;
+      margin-top: 10px;
+      padding: 10px 20px;
+      background: #333;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #555;
     }
 
     .message {
       margin-top: 0.5rem;
-      color: green;
+      font-weight: bold;
+    }
+
+    /* Dark Mode */
+    body.dark-mode details {
+      background: #1e1e1e;
+      border-color: #444;
+      color: #eee;
+    }
+
+    body.dark-mode summary {
+      color: #fff;
+    }
+
+    body.dark-mode input {
+      background: #2a2a2a;
+      color: #eee;
+      border: 1px solid #444;
+    }
+
+    body.dark-mode button {
+      background: #444;
+      color: #fff;
+    }
+
+    body.dark-mode button:hover {
+      background: #666;
     }
   </style>
 </head>
@@ -52,30 +95,39 @@
 
     <h2>User Management</h2>
 
-    <form id="add-user-form">
-      <label>New Username</label>
-      <input type="text" id="new-username" required />
-      <label>New Password</label>
-      <input type="password" id="new-password" required />
-      <button type="submit">Add User</button>
-      <p id="add-user-msg" class="message"></p>
-    </form>
+    <details>
+      <summary>➕ New User</summary>
+      <form id="add-user-form">
+        <label>Username</label>
+        <input type="text" id="new-username" required />
+        <label>Password</label>
+        <input type="password" id="new-password" required />
+        <button type="submit">Add User</button>
+        <p id="add-user-msg" class="message"></p>
+      </form>
+    </details>
 
-    <form id="update-password-form">
-      <label>Username</label>
-      <input type="text" id="update-username" required />
-      <label>New Password</label>
-      <input type="password" id="update-password" required />
-      <button type="submit">Update Password</button>
-      <p id="update-msg" class="message"></p>
-    </form>
+    <details>
+      <summary>🔁 Reset Password</summary>
+      <form id="update-password-form">
+        <label>Username</label>
+        <input type="text" id="update-username" required />
+        <label>New Password</label>
+        <input type="password" id="update-password" required />
+        <button type="submit">Update Password</button>
+        <p id="update-msg" class="message"></p>
+      </form>
+    </details>
 
-    <form id="delete-user-form">
-      <label>Username to Delete</label>
-      <input type="text" id="delete-username" required />
-      <button type="submit">Delete User</button>
-      <p id="delete-msg" class="message"></p>
-    </form>
+    <details>
+      <summary>❌ Delete User</summary>
+      <form id="delete-user-form">
+        <label>Username</label>
+        <input type="text" id="delete-username" required />
+        <button type="submit">Delete User</button>
+        <p id="delete-msg" class="message"></p>
+      </form>
+    </details>
   </div>
 
   <footer>
@@ -92,13 +144,10 @@
     // === DARK MODE ===
     const body = document.body;
     const toggle = document.getElementById("dark-toggle");
-
-    // Initialize dark mode from localStorage
     if (localStorage.getItem("dark-mode") === "true") {
       body.classList.add("dark-mode");
       toggle.checked = true;
     }
-
     toggle.addEventListener("change", () => {
       if (toggle.checked) {
         body.classList.add("dark-mode");
@@ -136,19 +185,20 @@
       document.getElementById("update-msg").textContent = res.ok ? "✅ Password updated!" : "❌ Failed to update.";
     });
 
-   document.getElementById("delete-user-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const username = document.getElementById("delete-username").value;
-  const confirmDelete = confirm(`Are you sure you want to permanently delete user "${username}"?`);
-  if (!confirmDelete) return;
+    document.getElementById("delete-user-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const username = document.getElementById("delete-username").value;
+      const confirmDelete = confirm(`Are you sure you want to permanently delete user "${username}"?`);
+      if (!confirmDelete) return;
 
-  const res = await fetch("/delete-user", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username })
-  });
+      const res = await fetch("/delete-user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username })
+      });
 
-  document.getElementById("delete-msg").textContent = res.ok ? "✅ User deleted!" : "❌ Failed to delete.";
-});  </script>
+      document.getElementById("delete-msg").textContent = res.ok ? "✅ User deleted!" : "❌ Failed to delete.";
+    });
+  </script>
 </body>
 </html>
