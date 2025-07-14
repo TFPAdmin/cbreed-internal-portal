@@ -14,7 +14,7 @@
     h1, h2 {
       text-align: center;
     }
-    .login, .dashboard {
+    .dashboard {
       max-width: 800px;
       margin: auto;
       background: #fff;
@@ -48,23 +48,17 @@
     .chapter-list {
       margin-top: 10px;
     }
+    .chapter-card {
+      border: 1px solid #ccc;
+      background: #fefefe;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 <body>
 
-<div class="login" id="login-box">
-  <h1>Admin Login</h1>
-  <label>Username:
-    <input type="text" id="username">
-  </label>
-  <label>Password:
-    <input type="password" id="password">
-  </label>
-  <button onclick="login()">Login</button>
-  <p id="login-error" style="color:red;"></p>
-</div>
-
-<div class="dashboard" id="dashboard" style="display:none;">
+<div class="dashboard" id="dashboard">
   <h1>Book Management</h1>
 
   <h2>Add Book</h2>
@@ -91,24 +85,9 @@
 </div>
 
 <script>
-  async function login() {
-    const username = document.getElementById("username").value;
-    const password = document.getElementById("password").value;
-    const res = await fetch("/login", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({ username, password })
-    });
-
-    if (res.ok) {
-      document.getElementById("login-box").style.display = "none";
-      document.getElementById("dashboard").style.display = "block";
-      loadBooks();
-    } else {
-      const text = await res.text();
-      document.getElementById("login-error").innerText = text || "Login failed.";
-    }
-  }
+  document.addEventListener("DOMContentLoaded", () => {
+    loadBooks();
+  });
 
   async function loadBooks() {
     const res = await fetch("/get-books");
@@ -176,8 +155,12 @@
 
     chapters.forEach(ch => {
       const div = document.createElement("div");
-      div.className = "book-card";
-      div.innerHTML = `<strong>Chapter ${ch.chapter_number}: ${ch.chapter_title}</strong><p>${ch.content}</p>`;
+      div.className = "chapter-card";
+      div.innerHTML = `
+        <strong>Chapter ${ch.chapter_number}: ${ch.chapter_title}</strong>
+        <p>${ch.content}</p>
+        <button onclick="deleteChapter(${ch.id}, '${bookTitle}')">Delete Chapter</button>
+      `;
       list.appendChild(div);
     });
   }
@@ -197,6 +180,16 @@
     });
 
     loadChapters(data.book_title);
+  }
+
+  async function deleteChapter(id, bookTitle) {
+    await fetch("/delete-chapter", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ id })
+    });
+
+    loadChapters(bookTitle);
   }
 </script>
 </body>
