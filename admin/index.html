@@ -1,1 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Book Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    .login, .dashboard {
+      max-width: 800px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+    }
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      background: #333;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    .book-card {
+      border: 1px solid #ccc;
+      margin-top: 10px;
+      padding: 10px;
+      background: #fafafa;
+    }
+    .chapter-list {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
 
+<div class="login" id="login-box">
+  <h1>Admin Login</h1>
+  <label>Username:
+    <input type="text" id="username">
+  </label>
+  <label>Password:
+    <input type="password" id="password">
+  </label>
+  <button onclick="login()">Login</button>
+  <p id="login-error" style="color:red;"></p>
+</div>
+
+<div class="dashboard" id="dashboard" style="display:none;">
+  <h1>Book Management</h1>
+
+  <h2>Add Book</h2>
+  <label>Title: <input type="text" id="book-title" /></label>
+  <label>Subtitle: <input type="text" id="book-subtitle" /></label>
+  <label>Excerpt: <textarea id="book-excerpt"></textarea></label>
+  <label>Cover Link: <input type="text" id="book-cover" /></label>
+  <label>Wattpad Link: <input type="text" id="book-wattpad" /></label>
+  <button onclick="addBook()">Add Book</button>
+  <p id="book-message"></p>
+
+  <h2>Bookshelf</h2>
+  <div id="book-list"></div>
+
+  <h2>Chapter Management</h2>
+  <label>Select Book:
+    <select id="chapter-book-select"></select>
+  </label>
+  <label>Chapter Number: <input type="number" id="chapter-number" /></label>
+  <label>Chapter Title: <input type="text" id="chapter-title" /></label>
+  <label>Content: <textarea id="chapter-content"></textarea></label>
+  <button onclick="addChapter()">Add Chapter</button>
+  <div class="chapter-list" id="chapter-list"></div>
+</div>
+
+<script>
+  async function login() {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+    const res = await fetch("/login", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ username, password })
+    });
+
+    if (res.ok) {
+      document.getElementById("login-box").style.display = "none";
+      document.getElementById("dashboard").style.display = "block";
+      loadBooks();
+    } else {
+      const text = await res.text();
+      document.getElementById("login-error").innerText = text || "Login failed.";
+    }
+  }
+
+  async function loadBooks() {
+    const res = await fetch("/get-books");
+    const books = await res.json();
+
+    const list = document.getElementById("book-list");
+    const select = document.getElementById("chapter-book-select");
+    list.innerHTML = "";
+    select.innerHTML = "";
+
+    books.forEach(book => {
+      const div = document.createElement("div");
+      div.className = "book-card";
+      div.innerHTML = `
+        <h3>${book.title}</h3>
+        <p><strong>Subtitle:</strong> ${book.subtitle || "—"}</p>
+        <p><strong>Excerpt:</strong> ${book.excerpt || "—"}</p>
+        <p><a href="${book.cover}" target="_blank">Cover</a> | <a href="${book.wattpad}" target="_blank">Wattpad</a></p>
+        <button onclick="deleteBook(${book.id})">Delete Book</button>
+        <button onclick="loadChapters('${book.title}')">Load Chapters</button>
+      `;
+      list.appendChild(div);
+
+      const option = document.createElement("option");
+      option.value = book.title;
+      option.textContent = book.title;
+      select.appendChild(option);
+    });
+  }
+
+  async function addBook() {
+    const data = {
+      title: document.getElementById("book-title").value,
+      subtitle: document.getElementById("book-subtitle").value,
+      excerpt: document.getElementById("book-excerpt").value,
+      cover: document.getElementById("book-cover").value,
+      wattpad: document.getElementById("book-wattpad").value
+    };
+
+    const res = await fetch("/add-book", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(data)
+    });
+
+    document.getElementById("book-message").innerText = res.ok ? "Book added!" : "Failed to add book.";
+    loadBooks();
+  }
+
+  async function deleteBook(id) {
+    await fetch("/delete-book", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ id })
+    });
+    loadBooks();
+  }
+
+  async function loadChapters(bookTitle) {
+    const res = await fetch(`/get-chapters?book_title=${encodeURIComponent(bookTitle)}`);
+    const chapters = await res.json();
+
+    const list = document.getElementById("chapter-list");
+    list.innerHTML = `<h3>Chapters for "${bookTitle}"</h3>`;
+
+    chapters.forEach(ch => {
+      const div = document.createElement("div");
+      div.className = "book-card";
+      div.innerHTML = `<strong>Chapter ${ch.chapter_number}: ${ch.chapter_title}</strong><p>${ch.content}</p>`;
+      list.appendChild(div);
+    });
+  }
+
+  async function addChapter() {
+    const data = {
+      book_title: document.getElementById("chapter-book-select").value,
+      chapter_number: parseInt(document.getElementById("chapter-number").value),
+      chapter_title: document.getElementById("chapter-title").value,
+      content: document.getElementById("chapter-content").value
+    };
+
+    await fetch("/add-chapter", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(data)
+    });
+
+    loadChapters(data.book_title);
+  }
+</script>
+</body>
+</html>
