@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Write a Chapter</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/style.css" />
+  <style>
+    .container {
+      max-width: 700px;
+      margin: 3rem auto;
+      padding: 1rem;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    textarea {
+      height: 200px;
+    }
+
+    .success {
+      color: green;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>✍️ Write a Chapter</h1>
+
+    <form id="chapter-form">
+      <label>
+        Select Book:
+        <select id="book-title" required></select>
+      </label>
+
+      <label>
+        Chapter Number:
+        <input type="number" id="chapter-number" required />
+      </label>
+
+      <label>
+        Chapter Title:
+        <input type="text" id="chapter-title" required />
+      </label>
+
+      <label>
+        Chapter Content:
+        <textarea id="chapter-content" required></textarea>
+      </label>
+
+      <button type="submit">Save Chapter</button>
+    </form>
+
+    <p id="status" class="success"></p>
+  </div>
+
+  <footer>
+    <nav>
+      <a href="/index.html">Home</a> |
+      <a href="/write.html">Write</a> |
+      <a href="/read.html">Read</a> |
+      <a href="/bookshelf.html">Bookshelf</a> |
+      <a href="/settings.html">Settings</a>
+    </nav>
+  </footer>
+
+  <script>
+    async function loadBooks() {
+      try {
+        const res = await fetch("/get-books");
+        const books = await res.json();
+        const select = document.getElementById("book-title");
+
+        books.forEach(book => {
+          const option = document.createElement("option");
+          option.value = book.title;
+          option.textContent = book.title;
+          select.appendChild(option);
+        });
+      } catch {
+        alert("Failed to load books.");
+      }
+    }
+
+    document.getElementById("chapter-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const data = {
+        book_title: document.getElementById("book-title").value,
+        chapter_number: parseInt(document.getElementById("chapter-number").value),
+        chapter_title: document.getElementById("chapter-title").value,
+        content: document.getElementById("chapter-content").value
+      };
+
+      const res = await fetch("/add-chapter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+
+      const status = document.getElementById("status");
+      if (res.ok) {
+        status.textContent = "✅ Chapter saved!";
+        e.target.reset();
+      } else {
+        status.textContent = "❌ Failed to save chapter.";
+        status.style.color = "red";
+      }
+    });
+
+    loadBooks();
+  </script>
+</body>
+</html>
