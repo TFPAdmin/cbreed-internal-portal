@@ -124,7 +124,7 @@
   <script>
     async function loadBooks() {
       try {
-        const res = await fetch("/get-books");
+        const res = await fetch("/get-all-books");
         const books = await res.json();
         const select = document.getElementById("book-title");
 
