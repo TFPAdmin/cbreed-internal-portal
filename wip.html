@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Work in Progress</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>🛠️ Work in Progress</h1>
+
+    <h2>Add New WIP Book</h2>
+    <form id="wip-form">
+      <label>Title:</label>
+      <input type="text" id="wip-title" required />
+      <label>Subtitle:</label>
+      <input type="text" id="wip-subtitle" />
+      <label>Excerpt:</label>
+      <textarea id="wip-excerpt"></textarea>
+      <label>Cover URL:</label>
+      <input type="url" id="wip-cover" />
+      <label>Wattpad URL (optional):</label>
+      <input type="url" id="wip-wattpad" />
+      <button type="submit">Save WIP Book</button>
+      <p id="wip-status" class="message"></p>
+    </form>
+
+    <h2>Your WIP Books</h2>
+    <ul id="wip-list"></ul>
+  </div>
+
+  <footer>
+    <nav>
+      <a href="/index.html">Home</a> |
+      <a href="/write.html">Write</a> |
+      <a href="/read.html">Read</a> |
+      <a href="/bookshelf.html">Bookshelf</a> |
+      <a href="/settings.html">Settings</a> |
+      <a href="/wip.html">WIP</a>
+    </nav>
+  </footer>
+
+  <script>
+    async function loadWipBooks() {
+      const list = document.getElementById("wip-list");
+      list.innerHTML = "<li>Loading...</li>";
+      try {
+        const res = await fetch("/get-wip-books");
+        const books = await res.json();
+        if (books.length === 0) {
+          list.innerHTML = "<li>No WIP books yet.</li>";
+          return;
+        }
+
+        list.innerHTML = "";
+        books.forEach(book => {
+          const li = document.createElement("li");
+          li.className = "book-card";
+          li.innerHTML = `
+            <h3>${book.title}</h3>
+            ${book.subtitle ? `<p><em>${book.subtitle}</em></p>` : ""}
+            ${book.excerpt ? `<p>${book.excerpt}</p>` : ""}
+            ${book.cover ? `<img src="${book.cover}" alt="${book.title}" onerror="this.style.display='none'" style="max-width:100px;">` : ""}
+            ${book.wattpad ? `<p><a href="${book.wattpad}" target="_blank">Wattpad</a></p>` : ""}
+          `;
+          list.appendChild(li);
+        });
+      } catch {
+        list.innerHTML = "<li>Failed to load WIP books.</li>";
+      }
+    }
+
+    document.getElementById("wip-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const data = {
+        title: document.getElementById("wip-title").value,
+        subtitle: document.getElementById("wip-subtitle").value,
+        excerpt: document.getElementById("wip-excerpt").value,
+        cover: document.getElementById("wip-cover").value,
+        wattpad: document.getElementById("wip-wattpad").value
+      };
+      const res = await fetch("/add-wip-book", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+
+      const status = document.getElementById("wip-status");
+      if (res.ok) {
+        status.textContent = "✅ WIP book saved!";
+        e.target.reset();
+        loadWipBooks();
+      } else {
+        status.textContent = "❌ Failed to save.";
+        status.style.color = "red";
+      }
+    });
+
+    // Load WIP books on page load
+    loadWipBooks();
+
+    // Apply dark mode
+    if (localStorage.getItem("dark-mode") === "true") {
+      document.body.classList.add("dark-mode");
+    }
+  </script>
+</body>
+</html>
