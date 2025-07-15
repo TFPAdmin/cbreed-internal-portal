@@ -10,15 +10,19 @@
   <div class="container">
     <div class="box">
       <h2>Admin Login</h2>
-      <input id="username" placeholder="Username" />
-      <input id="password" type="password" placeholder="Password" />
-      <button onclick="login()">Login</button>
-      <p id="error" class="error-text"></p>
+      <form id="login-form">
+        <input id="username" placeholder="Username" required />
+        <input id="password" type="password" placeholder="Password" required />
+        <button type="submit">Login</button>
+        <p id="error" class="error-text"></p>
+      </form>
     </div>
   </div>
 
   <script>
-    async function login() {
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
+      e.preventDefault(); // prevent full page reload
+
       const username = document.getElementById("username").value;
       const password = document.getElementById("password").value;
       const res = await fetch("/login", {
@@ -34,7 +38,7 @@
       } else {
         document.getElementById("error").innerText = "Login failed.";
       }
-    }
+    });
   </script>
 </body>
 </html>
