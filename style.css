@@ -84,6 +84,11 @@ button:hover {
   text-decoration: underline;
 }
 
+/* Paragraph Preservation */
+.chapter-content {
+  white-space: pre-wrap;
+}
+
 /* Footer */
 footer {
   margin-top: 3rem;
@@ -154,6 +159,11 @@ body.dark-mode footer {
 
 body.dark-mode a {
   color: #9cf;
+}
+
+body.dark-mode .chapter-content {
+  background: transparent;
+  color: #eee;
 }
 
 /* Login Page Box */
